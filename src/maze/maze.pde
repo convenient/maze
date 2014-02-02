@@ -20,7 +20,7 @@ int origin = 60;        //the amount of space to leave around the edge of the im
 int box_width = 28;     //the width of each box tile, must be an even?
 
 //28 and 9
-int maze_width = 32;
+int maze_width = 28;
 int maze_height = 9;
 
 int end_x = 0;
@@ -38,10 +38,82 @@ private Random generator = new Random();
 void setup() {
   size(screen_width, screen_height);
 
-        Luke lol = new Luke();
+        DepthFirstMaze maze = new DepthFirstMaze(maze_width, maze_height, 0, 0);
 
-  makeMaze();
+        maze.generate();
+
+        printGrid(maze);
+
+
+//  makeMaze();
 }
+
+void printGrid(Grid grid) {
+
+        for (int i=0; i<grid.grid.length; i++) {
+            for (int j=0; j<grid.grid[i].length; j++) {
+                if (grid.grid[i][j] != null) {
+                    printTile(i, j, grid.grid[i][j]);
+                }
+            }
+        }
+}
+
+void printTile(int x, int y, Tile tile) {
+
+        //stupid bug where i accidentally rotated y and x, lol
+        int adjusted_x = (y*(box_width))+origin;
+        int adjusted_y = (x*(box_width))+origin;
+
+        //top_left points
+        int xx = adjusted_x;
+        int yy = adjusted_y;
+
+        noStroke();
+        rectMode(CENTER);
+        fill(0);
+
+        //box width must be greater than 10 and even
+        int line_thickness = ((box_width)/10)*2;
+
+        int line_length = (box_width)-(2*line_thickness);
+
+        int offset = ((box_width)/2)-line_thickness;
+
+        if(tile.getEast()!=Tile.PATH_NONE){
+            rect(adjusted_x+offset+(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
+            rect(adjusted_x+offset+(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
+        }
+        else{
+            rect(adjusted_x+offset, adjusted_y, line_thickness, line_length+line_thickness);
+        }
+
+        if(tile.getWest()!=Tile.PATH_NONE){
+            rect(adjusted_x-offset-(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
+            rect(adjusted_x-offset-(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
+        }
+        else{
+            rect(adjusted_x-offset, adjusted_y, line_thickness, line_length+line_thickness);
+        }
+
+        if(tile.getNorth()!=Tile.PATH_NONE){
+            rect(adjusted_x-offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
+            rect(adjusted_x+offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
+        }
+        else{
+            rect(adjusted_x, adjusted_y-offset, line_length+line_thickness, line_thickness);
+        }
+
+        if(tile.getSouth()!=Tile.PATH_NONE){
+            rect(adjusted_x+offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
+            rect(adjusted_x-offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
+        }
+        else{
+            rect(adjusted_x, adjusted_y+offset, line_length+line_thickness, line_thickness);
+        }
+
+}
+
 
 void draw() {
 }
@@ -115,6 +187,7 @@ void dijkstra(){
 }
 
 void makeMaze(){
+
 
     //y-M-D
   generator.setSeed(19091990);
@@ -412,7 +485,7 @@ class tile {
     return walls;
   }
 
-  //prints
+//  prints
   void display() {
 
     //stupid bug where i accidentally rotated y and x, lol
@@ -479,5 +552,4 @@ class Point{
    this.y = y;
   }
 }
-
 
