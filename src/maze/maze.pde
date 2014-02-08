@@ -1,7 +1,7 @@
 GridContainer container = new GridContainer();
 
 void setup() {
-        size(1200, 600);
+        size(800, 400);
 
         Helper.printInstructions();
         container.generate();
@@ -121,85 +121,89 @@ class GridContainer {
         strokeCap(ROUND);
         strokeWeight(lineWidth);
 
-        for (int row = 0; row < maze.maze.length; row++) {
-            for (int col = 0; col < maze.maze[row].length; col++) {
-                if (maze.maze[row][col] != null) {
-                    this.printTile(row, col, maze.maze[row][col]);
-                }
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                this.printTile(row, col);
             }
         }
     }
 
-    public void printTile(int row, int col, Tile tile) {
-        //Adjust the row and column indexes so that we have a margin around the screen, as well as multiplying for
-        //pixel box width
-        int adjustedRow = (row * (boxWidth)) + margin;
-        int adjustedCol = (col * boxWidth) + margin;
+    public void printTile(int row, int col)
+    {
+        Tile tile = maze.getTileAt(row, col);
 
-        //Take note that Columns are x axis, and rows are y axis!
-        int topLeftX = adjustedCol;
-        int topLeftY = adjustedRow;
+        if (tile != null) {
 
-        int topRightX = topLeftX + boxWidth;
-        int topRightY = topLeftY;
+            //Adjust the row and column indexes so that we have a margin around the screen, as well as multiplying for
+            //pixel box width
+            int adjustedRow = (row * (boxWidth)) + margin;
+            int adjustedCol = (col * boxWidth) + margin;
 
-        int bottomLeftX = topLeftX;
-        int bottomLeftY = topLeftY + boxWidth;
+            //Take note that Columns are x axis, and rows are y axis!
+            int topLeftX = adjustedCol;
+            int topLeftY = adjustedRow;
 
-        int bottomRightX = topRightX;
-        int bottomRightY = topRightY + boxWidth;
+            int topRightX = topLeftX + boxWidth;
+            int topRightY = topLeftY;
 
-        //Pipe offset
-        topLeftX += pipeOffset;
-        topLeftY += pipeOffset;
+            int bottomLeftX = topLeftX;
+            int bottomLeftY = topLeftY + boxWidth;
 
-        bottomLeftX += pipeOffset;
-        bottomLeftY -= pipeOffset;
+            int bottomRightX = topRightX;
+            int bottomRightY = topRightY + boxWidth;
 
-        topRightX -= pipeOffset;
-        topRightY += pipeOffset;
+            //Pipe offset
+            topLeftX += pipeOffset;
+            topLeftY += pipeOffset;
 
-        bottomRightX -= pipeOffset;
-        bottomRightY -= pipeOffset;
+            bottomLeftX += pipeOffset;
+            bottomLeftY -= pipeOffset;
 
-        switch (tile.getNorth()) {
-            case Tile.PATH_NONE:
-                line(topLeftX, topLeftY, topRightX, topRightY);
-                break;
-            case Tile.PATH_FLAT:
-                line(topLeftX, topLeftY, topLeftX, topLeftY - pipeOffset);
-                line(topRightX, topRightY, topRightX, topRightY - pipeOffset);
-                break;
-        }
+            topRightX -= pipeOffset;
+            topRightY += pipeOffset;
 
-        switch (tile.getEast()) {
-            case Tile.PATH_NONE:
-                line(topRightX, topRightY, bottomRightX, bottomRightY);
-                break;
-            case Tile.PATH_FLAT:
-                line(topRightX, topRightY, topRightX + pipeOffset, topRightY);
-                line(bottomRightX, bottomRightY, bottomRightX + pipeOffset, bottomRightY);
-                break;
-        }
+            bottomRightX -= pipeOffset;
+            bottomRightY -= pipeOffset;
 
-        switch (tile.getWest()) {
-            case Tile.PATH_NONE:
-                line(topLeftX, topLeftY, bottomLeftX, bottomLeftY);
-                break;
-            case Tile.PATH_FLAT:
-                line(topLeftX, topLeftY, topLeftX - pipeOffset, topLeftY);
-                line(bottomLeftX, bottomLeftY, bottomLeftX - pipeOffset, bottomRightY);
-                break;
-        }
+            switch (tile.getNorth()) {
+                case Tile.PATH_NONE:
+                    line(topLeftX, topLeftY, topRightX, topRightY);
+                    break;
+                case Tile.PATH_FLAT:
+                    line(topLeftX, topLeftY, topLeftX, topLeftY - pipeOffset);
+                    line(topRightX, topRightY, topRightX, topRightY - pipeOffset);
+                    break;
+            }
 
-        switch (tile.getSouth()) {
-            case Tile.PATH_NONE:
-                line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
-                break;
-            case Tile.PATH_FLAT:
-                line(bottomLeftX, bottomLeftY, bottomLeftX, bottomLeftY + pipeOffset);
-                line(bottomRightX, bottomRightY, bottomRightX, bottomRightY + pipeOffset);
-                break;
+            switch (tile.getEast()) {
+                case Tile.PATH_NONE:
+                    line(topRightX, topRightY, bottomRightX, bottomRightY);
+                    break;
+                case Tile.PATH_FLAT:
+                    line(topRightX, topRightY, topRightX + pipeOffset, topRightY);
+                    line(bottomRightX, bottomRightY, bottomRightX + pipeOffset, bottomRightY);
+                    break;
+            }
+
+            switch (tile.getWest()) {
+                case Tile.PATH_NONE:
+                    line(topLeftX, topLeftY, bottomLeftX, bottomLeftY);
+                    break;
+                case Tile.PATH_FLAT:
+                    line(topLeftX, topLeftY, topLeftX - pipeOffset, topLeftY);
+                    line(bottomLeftX, bottomLeftY, bottomLeftX - pipeOffset, bottomRightY);
+                    break;
+            }
+
+            switch (tile.getSouth()) {
+                case Tile.PATH_NONE:
+                    line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
+                    break;
+                case Tile.PATH_FLAT:
+                    line(bottomLeftX, bottomLeftY, bottomLeftX, bottomLeftY + pipeOffset);
+                    line(bottomRightX, bottomRightY, bottomRightX, bottomRightY + pipeOffset);
+                    break;
+            }
         }
     }
 

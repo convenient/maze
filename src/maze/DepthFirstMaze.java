@@ -14,8 +14,8 @@ public class DepthFirstMaze extends AbstractMaze
 
     public void generate()
     {
-        this.maze = new Tile[this.rows][this.columns];
-        this.maze[start.getRow()][start.getCol()] = new Tile();
+        map.clear();
+        this.setTileAt(new Tile(), start);
 
         Stack<Location> stack = new Stack<Location>();
         stack.push(this.start);
@@ -38,4 +38,6 @@ public class DepthFirstMaze extends AbstractMaze
 
         }
     }
+
+//    private ArrayList<Integer> getUnvisitedNeighboursByTunnel()
 }

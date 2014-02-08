@@ -1,8 +1,10 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 abstract class AbstractMaze {
 
-    public Tile[][] maze;
+    public Map<String, Tile> map = new HashMap<String, Tile>();
 
     public int columns;
     public int rows;
@@ -57,14 +59,17 @@ abstract class AbstractMaze {
 
     public Location makePath(Location tile, int direction, int path)
     {
-        this.maze[tile.getRow()][tile.getCol()].setDirection(direction, path);
+        Tile foo = map.get(tile.toString());
+        foo.setDirection(direction, path);
+        map.put(tile.toString(), foo);
+
 
         Location newTileLocation = this.getNeighbourTileLocation(tile, direction);
 
         Tile newTile = new Tile();
         newTile.setDirection(Tile.reverseDirection(direction), path);
 
-        this.maze[newTileLocation.getRow()][newTileLocation.getCol()] = newTile;
+        map.put(newTileLocation.toString(), newTile);
 
         return newTileLocation;
     }
@@ -76,23 +81,43 @@ abstract class AbstractMaze {
         int rowLocation = tile.getRow();
         int colLocation = tile.getCol();
 
-        if (rowLocation != 0 && maze[rowLocation-1][colLocation] == null) {
+        if (rowLocation != 0 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_NORTH)) == null) {
             available_directions.add(Tile.DIR_NORTH);
         }
 
-        if(rowLocation < rows - 1 && maze[rowLocation+1][colLocation] == null){
+        if(rowLocation < rows - 1 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_SOUTH)) == null){
             available_directions.add(Tile.DIR_SOUTH);
         }
 
-        if(colLocation != 0 && maze[rowLocation][colLocation-1] == null){
+        if(colLocation != 0 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_WEST)) == null){
             available_directions.add(Tile.DIR_WEST);
         }
 
-        if(colLocation < columns - 1 && maze[rowLocation][colLocation+1] == null){
+        if(colLocation < columns - 1 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_EAST)) == null){
             available_directions.add(Tile.DIR_EAST);
         }
 
         return available_directions;
+    }
+
+    public Tile getTileAt(int row, int col)
+    {
+        return this.getTileAt(new Location(row, col));
+    }
+
+    public Tile getTileAt(Location l)
+    {
+        return map.get(l.toString());
+    }
+
+    public void setTileAt(Tile tile, int row, int col)
+    {
+        this.setTileAt(tile, new Location(row, col));
+    }
+
+    public void setTileAt(Tile tile, Location l)
+    {
+        map.put(l.toString(), tile);
     }
 
 }
