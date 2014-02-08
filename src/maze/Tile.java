@@ -102,4 +102,14 @@ class Tile {
         }
         return returnDirection;
     }
+
+    public String toString() {
+
+        String str = "North:\t" + ((this.getNorth() == Tile.PATH_NONE)?"Wall":"Path") + "\n";
+        str += "East:\t" + ((this.getEast() == Tile.PATH_NONE)?"Wall":"Path") + "\n";
+        str += "South:\t" + ((this.getSouth() == Tile.PATH_NONE)?"Wall":"Path") + "\n";
+        str += "West:\t" + ((this.getWest() == Tile.PATH_NONE)?"Wall":"Path") + "\n";
+
+        return str;
+    }
 }

@@ -46,75 +46,125 @@ void setup() {
 
         printGrid(maze);
 
-
 //  makeMaze();
 }
 
 void printGrid(Grid grid) {
-
-        for (int i=0; i<grid.grid.length; i++) {
-            for (int j=0; j<grid.grid[i].length; j++) {
-                if (grid.grid[i][j] != null) {
-                    printTile(i, j, grid.grid[i][j]);
+        for (int row=0; row < mazeRowCount; row++) {
+            for (int col=0; col < mazeColCount; col++) {
+                if (grid.grid[row][col] != null) {
+                    printTile(row, col, grid.grid[row][col]);
                 }
             }
         }
 }
 
-void printTile(int x, int y, Tile tile) {
 
-        //stupid bug where i accidentally rotated y and x, lol
-        int adjusted_x = (y*(box_width))+origin;
-        int adjusted_y = (x*(box_width))+origin;
+        void printTile(int row, int col, Tile tile)
+        {
+            int boxWidth = 30;
+            int margin = 20;
 
-        //top_left points
-        int xx = adjusted_x;
-        int yy = adjusted_y;
+            int adjustedRow = (row * boxWidth) + margin;
+            int adjustedCol = (col * boxWidth) + margin;
 
-        noStroke();
-        rectMode(CENTER);
-        fill(0);
+            //Take note that Columns are x axis, and rows are y axis!
+            int topLeftX = adjustedCol;
+            int topLeftY = adjustedRow;
 
-        //box width must be greater than 10 and even
-        int line_thickness = ((box_width)/10)*2;
+            int topRightX = topLeftX + boxWidth;
+            int topRightY = topLeftY;
 
-        int line_length = (box_width)-(2*line_thickness);
+            int bottomLeftX = topLeftX;
+            int bottomLeftY = topLeftY+boxWidth;
 
-        int offset = ((box_width)/2)-line_thickness;
+            int bottomRightX = topRightX;
+            int bottomRightY = topRightY + boxWidth;
 
-        if(tile.getEast()!=Tile.PATH_NONE){
-            rect(adjusted_x+offset+(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
-            rect(adjusted_x+offset+(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
+            noFill();
+            strokeWeight(5);
+            strokeCap(SQUARE);
+
+            switch (tile.getNorth()) {
+                case Tile.PATH_NONE:
+                    line(topLeftX, topLeftY, topRightX, topRightY);
+                    break;
+            }
+
+            switch (tile.getEast()) {
+                case Tile.PATH_NONE:
+                    line(topRightX, topRightY, bottomRightX, bottomRightY);
+                    break;
+            }
+
+            switch (tile.getWest()) {
+                case Tile.PATH_NONE:
+                    line(topLeftX, topLeftY, bottomLeftX, bottomLeftY);
+                    break;
+            }
+
+            switch (tile.getSouth()) {
+                case Tile.PATH_NONE:
+                    line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
+                    break;
+            }
+
         }
-        else{
-            rect(adjusted_x+offset, adjusted_y, line_thickness, line_length+line_thickness);
-        }
 
-        if(tile.getWest()!=Tile.PATH_NONE){
-            rect(adjusted_x-offset-(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
-            rect(adjusted_x-offset-(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
-        }
-        else{
-            rect(adjusted_x-offset, adjusted_y, line_thickness, line_length+line_thickness);
-        }
-
-        if(tile.getNorth()!=Tile.PATH_NONE){
-            rect(adjusted_x-offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
-            rect(adjusted_x+offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
-        }
-        else{
-            rect(adjusted_x, adjusted_y-offset, line_length+line_thickness, line_thickness);
-        }
-
-        if(tile.getSouth()!=Tile.PATH_NONE){
-            rect(adjusted_x+offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
-            rect(adjusted_x-offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
-        }
-        else{
-            rect(adjusted_x, adjusted_y+offset, line_length+line_thickness, line_thickness);
-        }
-
-}
+//void printTile(int x, int y, Tile tile) {
+//
+//        //stupid bug where i accidentally rotated y and x, lol
+//        int adjusted_x = (y*(box_width))+origin;
+//        int adjusted_y = (x*(box_width))+origin;
+//
+//        //top_left points
+//        int xx = adjusted_x;
+//        int yy = adjusted_y;
+//
+//        noStroke();
+//        rectMode(CENTER);
+//        fill(0);
+//
+//        //box width must be greater than 10 and even
+//        int line_thickness = ((box_width)/10)*2;
+//
+//        int line_length = (box_width)-(2*line_thickness);
+//
+//        int offset = ((box_width)/2)-line_thickness;
+//
+//        if(tile.getEast()!=Tile.PATH_NONE){
+//            rect(adjusted_x+offset+(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
+//            rect(adjusted_x+offset+(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
+//        }
+//        else{
+//            rect(adjusted_x+offset, adjusted_y, line_thickness, line_length+line_thickness);
+//        }
+//
+//        if(tile.getWest()!=Tile.PATH_NONE){
+//            rect(adjusted_x-offset-(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
+//            rect(adjusted_x-offset-(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
+//        }
+//        else{
+//            rect(adjusted_x-offset, adjusted_y, line_thickness, line_length+line_thickness);
+//        }
+//
+//        if(tile.getNorth()!=Tile.PATH_NONE){
+//            rect(adjusted_x-offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
+//            rect(adjusted_x+offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
+//        }
+//        else{
+//            rect(adjusted_x, adjusted_y-offset, line_length+line_thickness, line_thickness);
+//        }
+//
+//        if(tile.getSouth()!=Tile.PATH_NONE){
+//            rect(adjusted_x+offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
+//            rect(adjusted_x-offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
+//        }
+//        else{
+//            rect(adjusted_x, adjusted_y+offset, line_length+line_thickness, line_thickness);
+//        }
+//
+//}
 
 
 void draw() {
