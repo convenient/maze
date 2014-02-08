@@ -4,17 +4,12 @@ import java.util.Stack;
 
 public class DepthFirstMaze extends AbstractMaze
 {
-    Location start = new Location();
     private Random randomGenerator = new Random();
 
     public DepthFirstMaze(int rowCount, int colCount, Location start)
     {
-        this.rowCount = rowCount;
-        this.columnCount = colCount;
-
+        super(rowCount, colCount, start);
         randomGenerator.setSeed(19091990);
-
-        this.start = start;
     }
 
     public void generate()

@@ -7,7 +7,17 @@ abstract class AbstractMaze {
     public int columnCount;
     public int rowCount;
 
+    Location start = new Location();
+
     abstract void generate();
+
+    AbstractMaze(int rowCount, int columnCount, Location start)
+    {
+        this.rowCount = rowCount;
+        this.columnCount = columnCount;
+
+        this.start = start;
+    }
 
     private Location getNeighbourTileLocation(Location tile, int direction)
     {
