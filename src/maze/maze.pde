@@ -15,9 +15,6 @@ void setup() {
         container.draw();
 }
 
-void draw() {
-}
-
 void keyPressed() {
     Boolean redraw = false;
     switch(Character.toLowerCase(key)) {
@@ -56,10 +53,8 @@ void keyPressed() {
     }
 }
 
-static class Helper
-{
-    public static void printInstructions()
-    {
+static class Helper {
+    public static void printInstructions() {
         System.out.println("Decrease/Increase");
         System.out.println("Box Width:\t\tO/P");
         System.out.println("Pipe Offset:\tK/L");
@@ -71,41 +66,36 @@ static class Helper
     }
 }
 
-class GridContainer
-{
+class GridContainer {
     public DepthFirstMaze maze;
     public int boxWidth;
     public int margin;
     public int pipeOffset;
     public int lineWidth;
 
-    GridContainer()
-    {
+    GridContainer() {
         this.boxWidth = 30;
         this.margin = 20;
         this.pipeOffset = 6;
         this.lineWidth = 5;
     }
 
-    public void setMaze(DepthFirstMaze maze)
-    {
+    public void setMaze(DepthFirstMaze maze) {
         this.maze = maze;
     }
 
-    public void generate()
-    {
+    public void generate() {
         maze.generate();
     }
 
-    public void draw()
-    {
+    public void draw() {
         background(255);
         noFill();
         strokeCap(ROUND);
         strokeWeight(lineWidth);
 
-        for (int row=0; row < maze.maze.length; row++) {
-            for (int col=0; col < maze.maze[row].length; col++) {
+        for (int row = 0; row < maze.maze.length; row++) {
+            for (int col = 0; col < maze.maze[row].length; col++) {
                 if (maze.maze[row][col] != null) {
                     this.printTile(row, col, maze.maze[row][col]);
                 }
@@ -113,8 +103,9 @@ class GridContainer
         }
     }
 
-    public void printTile(int row, int col, Tile tile)
-    {
+    public void printTile(int row, int col, Tile tile) {
+        //Adjust the row and column indexes so that we have a margin around the screen, as well as multiplying for
+        //pixel box width
         int adjustedRow = (row * (boxWidth)) + margin;
         int adjustedCol = (col * boxWidth) + margin;
 
@@ -126,7 +117,7 @@ class GridContainer
         int topRightY = topLeftY;
 
         int bottomLeftX = topLeftX;
-        int bottomLeftY = topLeftY+boxWidth;
+        int bottomLeftY = topLeftY + boxWidth;
 
         int bottomRightX = topRightX;
         int bottomRightY = topRightY + boxWidth;
@@ -138,11 +129,11 @@ class GridContainer
         bottomLeftX += pipeOffset;
         bottomLeftY -= pipeOffset;
 
-        topRightX-=pipeOffset;
-        topRightY+=pipeOffset;
+        topRightX -= pipeOffset;
+        topRightY += pipeOffset;
 
-        bottomRightX-=pipeOffset;
-        bottomRightY-=pipeOffset;
+        bottomRightX -= pipeOffset;
+        bottomRightY -= pipeOffset;
 
         switch (tile.getNorth()) {
             case Tile.PATH_NONE:
