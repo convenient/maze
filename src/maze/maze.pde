@@ -44,6 +44,10 @@ void setup() {
         DepthFirstMaze maze = new DepthFirstMaze(mazeRowCount, mazeColCount, start);
         maze.generate();
 
+        printTile(0,0,maze.grid[0][0]);
+        printTile(0,1,maze.grid[0][1]);
+
+
         printGrid(maze);
 
 //  makeMaze();
@@ -65,7 +69,7 @@ void printGrid(Grid grid) {
             int boxWidth = 30;
             int margin = 20;
 
-            int adjustedRow = (row * boxWidth) + margin;
+            int adjustedRow = (row * (boxWidth)) + margin;
             int adjustedCol = (col * boxWidth) + margin;
 
             //Take note that Columns are x axis, and rows are y axis!
@@ -81,13 +85,31 @@ void printGrid(Grid grid) {
             int bottomRightX = topRightX;
             int bottomRightY = topRightY + boxWidth;
 
+            //Pipe offset
+            int pipeOffset = 6;
+            topLeftX += pipeOffset;
+            topLeftY += pipeOffset;
+
+            bottomLeftX += pipeOffset;
+            bottomLeftY -= pipeOffset;
+
+            topRightX-=pipeOffset;
+            topRightY+=pipeOffset;
+
+            bottomRightX-=pipeOffset;
+            bottomRightY-=pipeOffset;
+
             noFill();
             strokeWeight(5);
-            strokeCap(SQUARE);
+            strokeCap(ROUND);
 
             switch (tile.getNorth()) {
                 case Tile.PATH_NONE:
                     line(topLeftX, topLeftY, topRightX, topRightY);
+                    break;
+                case Tile.PATH_FLAT:
+                    line(topLeftX, topLeftY, topLeftX, topLeftY - pipeOffset);
+                    line(topRightX, topRightY, topRightX, topRightY - pipeOffset);
                     break;
             }
 
@@ -95,17 +117,30 @@ void printGrid(Grid grid) {
                 case Tile.PATH_NONE:
                     line(topRightX, topRightY, bottomRightX, bottomRightY);
                     break;
+                case Tile.PATH_FLAT:
+                    line(topRightX, topRightY, topRightX + pipeOffset, topRightY);
+                    line(bottomRightX, bottomRightY, bottomRightX + pipeOffset, bottomRightY);
+                    break;
             }
 
             switch (tile.getWest()) {
                 case Tile.PATH_NONE:
                     line(topLeftX, topLeftY, bottomLeftX, bottomLeftY);
                     break;
+                case Tile.PATH_FLAT:
+                    line(topLeftX, topLeftY, topLeftX - pipeOffset, topLeftY);
+                    line(bottomLeftX, bottomLeftY, bottomLeftX - pipeOffset, bottomRightY);
+                    break;
             }
 
             switch (tile.getSouth()) {
                 case Tile.PATH_NONE:
                     line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
+                    break;
+                case Tile.PATH_FLAT:
+                    line(bottomLeftX, bottomLeftY, bottomLeftX, bottomLeftY + pipeOffset);
+                    line(bottomRightX, bottomRightY, bottomRightX, bottomRightY + pipeOffset);
+//                    line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
                     break;
             }
 
