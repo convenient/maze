@@ -57,19 +57,17 @@ abstract class AbstractMaze {
         return location;
     }
 
-    public Location makePath(Location tile, int direction, int path)
+    public Location makePath(Location tileLocation, int direction, int path)
     {
-        Tile foo = map.get(tile.toString());
-        foo.setDirection(direction, path);
-        map.put(tile.toString(), foo);
+        Tile tile = this.getTileAt(tileLocation);
+        tile.setDirection(direction, path);
+        this.setTileAt(tile, tileLocation);
 
-
-        Location newTileLocation = this.getNeighbourTileLocation(tile, direction);
-
+        Location newTileLocation = this.getNeighbourTileLocation(tileLocation, direction);
         Tile newTile = new Tile();
         newTile.setDirection(Tile.reverseDirection(direction), path);
 
-        map.put(newTileLocation.toString(), newTile);
+        this.setTileAt(newTile, newTileLocation);
 
         return newTileLocation;
     }
@@ -107,7 +105,7 @@ abstract class AbstractMaze {
 
     public Tile getTileAt(Location l)
     {
-        return map.get(l.toString());
+        return map.get(l.getHashMapKey());
     }
 
     public void setTileAt(Tile tile, int row, int col)
@@ -117,7 +115,7 @@ abstract class AbstractMaze {
 
     public void setTileAt(Tile tile, Location l)
     {
-        map.put(l.toString(), tile);
+        map.put(l.getHashMapKey(), tile);
     }
 
 }

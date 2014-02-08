@@ -35,6 +35,10 @@ public class Location{
         return getClass().getName() + "[row=" + row + ",col=" + col + "]";
     }
 
+    public String getHashMapKey() {
+        return getClass().getName() + "[row=" + row + ",col=" + col + "]";
+    }
+
     public void set(int row, int col) {
         this.row = row;
         this.col = col;
