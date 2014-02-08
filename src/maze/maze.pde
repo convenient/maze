@@ -15,6 +15,8 @@ void setup() {
         container.draw();
 }
 
+//Draw needs to be called for keyPressed to work.
+void draw(){}
 void keyPressed() {
     Boolean redraw = false;
     switch(Character.toLowerCase(key)) {
