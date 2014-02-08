@@ -104,6 +104,7 @@ class GridContainer {
         Location start = new Location();
         start.setRow(0);
         start.setCol(0);
+        start.setDepth(0);
 
         this.maze = new DepthFirstMaze(this.rows, this.columns, start);
     }
@@ -123,14 +124,14 @@ class GridContainer {
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
-                this.printTile(row, col);
+                this.printTile(row, col, 0);
             }
         }
     }
 
-    public void printTile(int row, int col)
+    public void printTile(int row, int col, int depth)
     {
-        Tile tile = maze.getTileAt(row, col);
+        Tile tile = maze.getTileAt(row, col, depth);
 
         if (tile != null) {
 

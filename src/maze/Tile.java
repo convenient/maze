@@ -1,9 +1,9 @@
 class Tile {
 
-    public static final int PATH_NONE = 0;
-    public static final int PATH_DOWN = 1;
-    public static final int PATH_FLAT = 2;
-    public static final int PATH_UP = 3;
+    public static final int PATH_NONE = 9;
+    public static final int PATH_DOWN = -1;
+    public static final int PATH_FLAT = 0;
+    public static final int PATH_UP = +1;
 
     public static final int DIR_NORTH = 0;
     public static final int DIR_EAST = 1;

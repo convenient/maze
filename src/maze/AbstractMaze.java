@@ -37,7 +37,7 @@ abstract class AbstractMaze {
 
     private Location getNeighbourTileLocation(Location tile, int direction)
     {
-        Location location = new Location(tile.getRow(), tile.getCol());
+        Location location = new Location(tile.getRow(), tile.getCol(), tile.getDepth());
 
         switch (direction) {
             case Tile.DIR_NORTH:
@@ -98,9 +98,9 @@ abstract class AbstractMaze {
         return available_directions;
     }
 
-    public Tile getTileAt(int row, int col)
+    public Tile getTileAt(int row, int col, int depth)
     {
-        return this.getTileAt(new Location(row, col));
+        return this.getTileAt(new Location(row, col, depth));
     }
 
     public Tile getTileAt(Location l)
@@ -108,9 +108,9 @@ abstract class AbstractMaze {
         return map.get(l.getHashMapKey());
     }
 
-    public void setTileAt(Tile tile, int row, int col)
+    public void setTileAt(Tile tile, int row, int col, int depth)
     {
-        this.setTileAt(tile, new Location(row, col));
+        this.setTileAt(tile, new Location(row, col, depth));
     }
 
     public void setTileAt(Tile tile, Location l)
