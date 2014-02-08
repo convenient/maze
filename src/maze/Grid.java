@@ -15,6 +15,10 @@ public class Grid {
         this.grid = new Tile[rowCount][columnCount];
     }
 
+    public void generate()
+    {
+    }
+
     private Location getNeighbourTileLocation(Location tile, int direction)
     {
         Location location = new Location(tile.getRow(), tile.getCol());

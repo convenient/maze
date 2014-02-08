@@ -1,55 +1,113 @@
+GridContainer container = new GridContainer();
+
 void setup() {
         size(1200, 600);
+
+        Helper.printInstructions();
 
         Location start = new Location();
         start.setRow(1);
         start.setCol(2);
 
-        DepthFirstMaze maze = new DepthFirstMaze(10, 25, start);
-        maze.generate();
+        container.setGrid(new DepthFirstMaze(10, 25, start));
 
-        int boxWidth = 30;
-        int margin = 20;
-        int pipeOffset = 6;
-        int lineWidth = 5;
-        GridPainter p = new GridPainter(boxWidth, margin, pipeOffset, lineWidth);
-        p.draw(maze);
+        container.generate();
+        container.draw();
 }
 
 void draw() {
 }
 
 void keyPressed() {
+    Boolean redraw = false;
     switch(Character.toLowerCase(key)) {
-        case 'm':
-            println("HARRO");
+        case 'p':
+            container.boxWidth++;
+            redraw = true;
             break;
+        case 'o':
+            container.boxWidth--;
+            redraw = true;
+            break;
+        case 'l':
+            container.pipeOffset++;
+            redraw = true;
+            break;
+        case 'k':
+            container.pipeOffset--;
+            redraw = true;
+            break;
+        case 'm':
+            container.lineWidth++;
+            redraw = true;
+            break;
+        case 'n':
+            container.lineWidth--;
+            redraw = true;
+            break;
+        case 'g':
+            container.generate();
+            redraw = true;
+            break;
+    }
+
+    if (redraw) {
+        container.draw();
     }
 }
 
-class GridPainter{
-
-    private int boxWidth;
-    private int margin;
-    private int pipeOffset;
-
-    GridPainter(int boxWidth, int margin, int pipeOffset, int lineWidth)
+static class Helper
+{
+    public static void printInstructions()
     {
+        System.out.println("Decrease/Increase");
+        System.out.println("Box Width:\t\tO/P");
+        System.out.println("Pipe Offset:\tK/L");
+        System.out.println("Line Width:\tN/M");
+
+        System.out.println();
+        System.out.println("Generate Maze:\tG");
+
+    }
+}
+
+class GridContainer
+{
+    public Grid grid;
+    public int boxWidth;
+    public int margin;
+    public int pipeOffset;
+    public int lineWidth;
+
+    GridContainer()
+    {
+        this.boxWidth = 30;
+        this.margin = 20;
+        this.pipeOffset = 6;
+        this.lineWidth = 5;
+    }
+
+    public void setGrid(Grid grid)
+    {
+        this.grid = grid;
+    }
+
+    public void generate()
+    {
+        grid.generate();
+    }
+
+    public void draw()
+    {
+        background(255);
         noFill();
         strokeCap(ROUND);
         strokeWeight(lineWidth);
 
-        this.boxWidth = boxWidth;
-        this.margin = margin;
-        this.pipeOffset = pipeOffset;
-    }
-
-    public void draw(Grid g)
-    {
-        for (int row=0; row < g.grid.length; row++) {
-            for (int col=0; col < g.grid[row].length; col++) {
-                if (g.grid[row][col] != null) {
-                    this.printTile(row, col, g.grid[row][col]);
+        for (int row=0; row < grid.grid.length; row++) {
+            for (int col=0; col < grid.grid[row].length; col++) {
+                if (grid.grid[row][col] != null) {
+                    this.printTile(row, col, grid.grid[row][col]);
                 }
             }
         }

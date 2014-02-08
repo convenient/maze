@@ -7,10 +7,15 @@ public class DepthFirstMaze extends Grid
     Location start = new Location();
     private Random randomGenerator = new Random();
 
+    public DepthFirstMaze()
+    {
+        super(0,0);
+    }
+
     public DepthFirstMaze(int rowCount, int colCount, Location start)
     {
         super(rowCount, colCount);
-        randomGenerator.setSeed(19091990);
+        randomGenerator.setSeed(System.currentTimeMillis() / 1000L);
         this.start = start;
         this.grid[start.getRow()][start.getCol()] = new Tile();
     }
