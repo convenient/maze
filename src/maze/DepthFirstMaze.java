@@ -2,26 +2,26 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
-public class DepthFirstMaze extends Grid
+public class DepthFirstMaze extends AbstractMaze
 {
     Location start = new Location();
     private Random randomGenerator = new Random();
 
-    public DepthFirstMaze()
-    {
-        super(0,0);
-    }
-
     public DepthFirstMaze(int rowCount, int colCount, Location start)
     {
-        super(rowCount, colCount);
-        randomGenerator.setSeed(System.currentTimeMillis() / 1000L);
+        this.rowCount = rowCount;
+        this.columnCount = colCount;
+
+        randomGenerator.setSeed(19091990);
+
         this.start = start;
-        this.grid[start.getRow()][start.getCol()] = new Tile();
     }
 
     public void generate()
     {
+        this.maze = new Tile[this.rowCount][this.columnCount];
+        this.maze[start.getRow()][start.getCol()] = new Tile();
+
         Stack<Location> stack = new Stack<Location>();
         stack.push(this.start);
 

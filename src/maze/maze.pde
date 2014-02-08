@@ -73,7 +73,7 @@ static class Helper
 
 class GridContainer
 {
-    public Grid grid;
+    public DepthFirstMaze grid;
     public int boxWidth;
     public int margin;
     public int pipeOffset;
@@ -87,7 +87,7 @@ class GridContainer
         this.lineWidth = 5;
     }
 
-    public void setGrid(Grid grid)
+    public void setGrid(DepthFirstMaze grid)
     {
         this.grid = grid;
     }
@@ -104,10 +104,10 @@ class GridContainer
         strokeCap(ROUND);
         strokeWeight(lineWidth);
 
-        for (int row=0; row < grid.grid.length; row++) {
-            for (int col=0; col < grid.grid[row].length; col++) {
-                if (grid.grid[row][col] != null) {
-                    this.printTile(row, col, grid.grid[row][col]);
+        for (int row=0; row < grid.maze.length; row++) {
+            for (int col=0; col < grid.maze[row].length; col++) {
+                if (grid.maze[row][col] != null) {
+                    this.printTile(row, col, grid.maze[row][col]);
                 }
             }
         }
