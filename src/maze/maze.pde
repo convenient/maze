@@ -1,642 +1,130 @@
-//The types of edges each tile can have
-static final int PASSAGE = 0;
-static final int TUNNEL = 1;
-static final int WALL = 3;
-
-//direction names
-static final int UP = 10;
-static final int DOWN = 11;
-static final int LEFT = 12;
-static final int RIGHT = 13;
-static final int UP_TUNNEL = 14;
-static final int DOWN_TUNNEL = 15;
-static final int LEFT_TUNNEL = 16;
-static final int RIGHT_TUNNEL = 17;
-static final int NO_DIRECTION = 18;
-
-int screen_width = 1200;
-int screen_height = 600;
-int origin = 60;        //the amount of space to leave around the edge of the image
-int box_width = 28;     //the width of each box tile, must be an even?
-
-int mazeRowCount = 10;
-int mazeColCount = 25;
-
-int end_x = 0;
-int end_y = 0;
-
-tile[][] maze;
-
-//queue for dijkstra
-//stack for building maze
-Queue<Point> queue=new LinkedList<Point>();
-Stack stack;
-
-private Random generator = new Random();
-
 void setup() {
-        size(screen_width, screen_height);
+        size(1200, 600);
 
         Location start = new Location();
         start.setRow(1);
         start.setCol(2);
 
-        DepthFirstMaze maze = new DepthFirstMaze(mazeRowCount, mazeColCount, start);
+        DepthFirstMaze maze = new DepthFirstMaze(10, 25, start);
         maze.generate();
 
-        printTile(0,0,maze.grid[0][0]);
-        printTile(0,1,maze.grid[0][1]);
-
-
-        printGrid(maze);
-
-//  makeMaze();
+        int boxWidth = 30;
+        int margin = 20;
+        int pipeOffset = 6;
+        int lineWidth = 5;
+        GridPainter p = new GridPainter(boxWidth, margin, pipeOffset, lineWidth);
+        p.draw(maze);
 }
-
-void printGrid(Grid grid) {
-        for (int row=0; row < mazeRowCount; row++) {
-            for (int col=0; col < mazeColCount; col++) {
-                if (grid.grid[row][col] != null) {
-                    printTile(row, col, grid.grid[row][col]);
-                }
-            }
-        }
-}
-
-
-        void printTile(int row, int col, Tile tile)
-        {
-            int boxWidth = 30;
-            int margin = 20;
-
-            int adjustedRow = (row * (boxWidth)) + margin;
-            int adjustedCol = (col * boxWidth) + margin;
-
-            //Take note that Columns are x axis, and rows are y axis!
-            int topLeftX = adjustedCol;
-            int topLeftY = adjustedRow;
-
-            int topRightX = topLeftX + boxWidth;
-            int topRightY = topLeftY;
-
-            int bottomLeftX = topLeftX;
-            int bottomLeftY = topLeftY+boxWidth;
-
-            int bottomRightX = topRightX;
-            int bottomRightY = topRightY + boxWidth;
-
-            //Pipe offset
-            int pipeOffset = 6;
-            topLeftX += pipeOffset;
-            topLeftY += pipeOffset;
-
-            bottomLeftX += pipeOffset;
-            bottomLeftY -= pipeOffset;
-
-            topRightX-=pipeOffset;
-            topRightY+=pipeOffset;
-
-            bottomRightX-=pipeOffset;
-            bottomRightY-=pipeOffset;
-
-            noFill();
-            strokeWeight(5);
-            strokeCap(ROUND);
-
-            switch (tile.getNorth()) {
-                case Tile.PATH_NONE:
-                    line(topLeftX, topLeftY, topRightX, topRightY);
-                    break;
-                case Tile.PATH_FLAT:
-                    line(topLeftX, topLeftY, topLeftX, topLeftY - pipeOffset);
-                    line(topRightX, topRightY, topRightX, topRightY - pipeOffset);
-                    break;
-            }
-
-            switch (tile.getEast()) {
-                case Tile.PATH_NONE:
-                    line(topRightX, topRightY, bottomRightX, bottomRightY);
-                    break;
-                case Tile.PATH_FLAT:
-                    line(topRightX, topRightY, topRightX + pipeOffset, topRightY);
-                    line(bottomRightX, bottomRightY, bottomRightX + pipeOffset, bottomRightY);
-                    break;
-            }
-
-            switch (tile.getWest()) {
-                case Tile.PATH_NONE:
-                    line(topLeftX, topLeftY, bottomLeftX, bottomLeftY);
-                    break;
-                case Tile.PATH_FLAT:
-                    line(topLeftX, topLeftY, topLeftX - pipeOffset, topLeftY);
-                    line(bottomLeftX, bottomLeftY, bottomLeftX - pipeOffset, bottomRightY);
-                    break;
-            }
-
-            switch (tile.getSouth()) {
-                case Tile.PATH_NONE:
-                    line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
-                    break;
-                case Tile.PATH_FLAT:
-                    line(bottomLeftX, bottomLeftY, bottomLeftX, bottomLeftY + pipeOffset);
-                    line(bottomRightX, bottomRightY, bottomRightX, bottomRightY + pipeOffset);
-//                    line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
-                    break;
-            }
-
-        }
-
-//void printTile(int x, int y, Tile tile) {
-//
-//        //stupid bug where i accidentally rotated y and x, lol
-//        int adjusted_x = (y*(box_width))+origin;
-//        int adjusted_y = (x*(box_width))+origin;
-//
-//        //top_left points
-//        int xx = adjusted_x;
-//        int yy = adjusted_y;
-//
-//        noStroke();
-//        rectMode(CENTER);
-//        fill(0);
-//
-//        //box width must be greater than 10 and even
-//        int line_thickness = ((box_width)/10)*2;
-//
-//        int line_length = (box_width)-(2*line_thickness);
-//
-//        int offset = ((box_width)/2)-line_thickness;
-//
-//        if(tile.getEast()!=Tile.PATH_NONE){
-//            rect(adjusted_x+offset+(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
-//            rect(adjusted_x+offset+(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
-//        }
-//        else{
-//            rect(adjusted_x+offset, adjusted_y, line_thickness, line_length+line_thickness);
-//        }
-//
-//        if(tile.getWest()!=Tile.PATH_NONE){
-//            rect(adjusted_x-offset-(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
-//            rect(adjusted_x-offset-(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
-//        }
-//        else{
-//            rect(adjusted_x-offset, adjusted_y, line_thickness, line_length+line_thickness);
-//        }
-//
-//        if(tile.getNorth()!=Tile.PATH_NONE){
-//            rect(adjusted_x-offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
-//            rect(adjusted_x+offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
-//        }
-//        else{
-//            rect(adjusted_x, adjusted_y-offset, line_length+line_thickness, line_thickness);
-//        }
-//
-//        if(tile.getSouth()!=Tile.PATH_NONE){
-//            rect(adjusted_x+offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
-//            rect(adjusted_x-offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
-//        }
-//        else{
-//            rect(adjusted_x, adjusted_y+offset, line_length+line_thickness, line_thickness);
-//        }
-//
-//}
-
 
 void draw() {
 }
 
 void keyPressed() {
-  if(key == 'M' || key == 'm'){
-    makeMaze();
-  }
-  if(key == 'W'){
-    mazeColCount++;
-    makeMaze();
-  }
-  if(key == 'w'){
-    mazeColCount--;
-    if(mazeColCount<2){mazeColCount=2;}
-    makeMaze();
-  }
-  if(key == 'H'){
-    mazeRowCount++;
-    makeMaze();
-  }
-  if(key == 'h'){
-    mazeRowCount--;
-    if(mazeRowCount<2){mazeRowCount=2;}
-    makeMaze();
-  }
-  if(key == 'S'){
-    box_width+=2;
-    makeMaze();
-  }
-  if(key == 's'){
-    box_width-=2;
-    if(box_width<10){box_width=10;}
-    makeMaze();
-  }
+    switch(Character.toLowerCase(key)) {
+        case 'm':
+            println("HARRO");
+            break;
+    }
 }
 
-void dijkstra(){
+class GridPainter{
 
-  if(queue.size()==0){
-    return;
-  }
+    private int boxWidth;
+    private int margin;
+    private int pipeOffset;
 
-  Point p;
-  Point working;
+    GridPainter(int boxWidth, int margin, int pipeOffset, int lineWidth)
+    {
+        noFill();
+        strokeCap(ROUND);
+        strokeWeight(lineWidth);
 
-  Iterator iterator;
-  ArrayList<Point> neighbours;
+        this.boxWidth = boxWidth;
+        this.margin = margin;
+        this.pipeOffset = pipeOffset;
+    }
 
-  p = queue.poll();
-
-  neighbours = maze[p.x][p.y].getPaths();
-  iterator = neighbours.iterator();
-
-  if(neighbours.size()!=0){
-    while(iterator.hasNext()){
-      working = (Point)iterator.next();
-      maze[working.x][working.y].visited=true;
-      int number_of_walls = maze[working.x][working.y].countWalls();
-
-      if(number_of_walls==3){
-        if(working.x==mazeRowCount-1||working.x==0||working.y==mazeColCount-1||working.y==0){
-          end_x=working.x;
-          end_y=working.y;
+    public void draw(Grid g)
+    {
+        for (int row=0; row < g.grid.length; row++) {
+            for (int col=0; col < g.grid[row].length; col++) {
+                if (g.grid[row][col] != null) {
+                    this.printTile(row, col, g.grid[row][col]);
+                }
+            }
         }
-      }
-      stack.push(working);
-      queue.add(working);
     }
-  }
-}
 
-void makeMaze(){
+    public void printTile(int row, int col, Tile tile)
+    {
+        int adjustedRow = (row * (boxWidth)) + margin;
+        int adjustedCol = (col * boxWidth) + margin;
 
+        //Take note that Columns are x axis, and rows are y axis!
+        int topLeftX = adjustedCol;
+        int topLeftY = adjustedRow;
 
-    //y-M-D
-  generator.setSeed(19091990);
+        int topRightX = topLeftX + boxWidth;
+        int topRightY = topLeftY;
 
-  maze = new tile[mazeRowCount][mazeColCount];
+        int bottomLeftX = topLeftX;
+        int bottomLeftY = topLeftY+boxWidth;
 
-  //clear the screen
-  //set stroke to black
-  background(255);
-  stroke(0);
+        int bottomRightX = topRightX;
+        int bottomRightY = topRightY + boxWidth;
 
-  //create the maze to start at 0,0
-  tile start = new tile(0,0);
-  maze[0][0]=start;
+        //Pipe offset
+        topLeftX += pipeOffset;
+        topLeftY += pipeOffset;
 
-  //Set up the stack, and start the maze
-  stack = new Stack();
-  stack.push(start);
+        bottomLeftX += pipeOffset;
+        bottomLeftY -= pipeOffset;
 
-  //used to store the current working point, and the direction to head
-  tile working;
-  int direction;
+        topRightX-=pipeOffset;
+        topRightY+=pipeOffset;
 
-  //while there are points on the stack
-  while(!stack.empty()){
+        bottomRightX-=pipeOffset;
+        bottomRightY-=pipeOffset;
 
-    working = (tile)stack.peek();
-
-    direction = maze[working.x][working.y].getRandomUnvisitedNeighbour();
-
-    if(direction!=NO_DIRECTION){
-
-      if(working.x==0&&working.y==0){
-        if(direction==DOWN){
-          maze[0][0].removeWall(UP);
+        switch (tile.getNorth()) {
+            case Tile.PATH_NONE:
+                line(topLeftX, topLeftY, topRightX, topRightY);
+                break;
+            case Tile.PATH_FLAT:
+                line(topLeftX, topLeftY, topLeftX, topLeftY - pipeOffset);
+                line(topRightX, topRightY, topRightX, topRightY - pipeOffset);
+                break;
         }
-        else{
-          maze[0][0].removeWall(LEFT);
+
+        switch (tile.getEast()) {
+            case Tile.PATH_NONE:
+                line(topRightX, topRightY, bottomRightX, bottomRightY);
+                break;
+            case Tile.PATH_FLAT:
+                line(topRightX, topRightY, topRightX + pipeOffset, topRightY);
+                line(bottomRightX, bottomRightY, bottomRightX + pipeOffset, bottomRightY);
+                break;
         }
-      }
 
-      stack.push(maze[working.x][working.y].makePathway(direction));
+        switch (tile.getWest()) {
+            case Tile.PATH_NONE:
+                line(topLeftX, topLeftY, bottomLeftX, bottomLeftY);
+                break;
+            case Tile.PATH_FLAT:
+                line(topLeftX, topLeftY, topLeftX - pipeOffset, topLeftY);
+                line(bottomLeftX, bottomLeftY, bottomLeftX - pipeOffset, bottomRightY);
+                break;
+        }
 
+        switch (tile.getSouth()) {
+            case Tile.PATH_NONE:
+                line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
+                break;
+            case Tile.PATH_FLAT:
+                line(bottomLeftX, bottomLeftY, bottomLeftX, bottomLeftY + pipeOffset);
+                line(bottomRightX, bottomRightY, bottomRightX, bottomRightY + pipeOffset);
+                break;
+        }
     }
-    else{
-      stack.pop();
-    }
 
-  }//end stack loop
-
-
-  //NOW WE HAVE TO FIND THE END OF THE MAZE
-  //THE STACK WILL COUNT ALL VISITED TILES, ONCE ALL VISITED
-  stack = new Stack();
-
-  //ADD THE HOME TILE, 0,0
-  queue=new LinkedList<Point>();
-  queue.add(new Point(0,0));
-  maze[0][0].visited=true;
-
-  while(stack.size()!=((mazeColCount*mazeRowCount)-1)){
-    dijkstra();
-  }
-
-  if(end_x==mazeRowCount-1){
-    maze[end_x][end_y].removeWall(DOWN);
-  }
-  else if(end_x==0){
-    maze[end_x][end_y].removeWall(UP);
-  }
-  else if(end_y==0){
-    maze[end_x][end_y].removeWall(LEFT);
-  }
-  else{
-    maze[end_x][end_y].removeWall(RIGHT);
-  }
-
-  drawMaze();
-
-}//end make maze
-
-void drawMaze(){
-  for(int i=0;i<mazeRowCount;i++){
-    for(int j=0;j<mazeColCount;j++){
-      tile temp= maze[i][j];
-      if(temp !=null){
-        temp.display();
-      }
-    }
-  }
 }
-
-class tile {
-
-  int up;
-  int down;
-  int left;
-  int right;
-
-  boolean visited;
-
-  int x;                //x coord
-  int y;                //y coord
-
-  tile(int x_pos,int y_pos) {
-    this.up = down = left = right = WALL;
-    this.x = x_pos;
-    this.y = y_pos;
-    this.visited = false;
-  }
-
-  //Get direction to move, empty neighbours or tunnel options!
-  int getRandomUnvisitedNeighbour(){
-
-    ArrayList<Integer> available_directions = new ArrayList<Integer>();
-
-    if(x!=0 && maze[x-1][y]==null){
-      available_directions.add(UP);
-    }
-    else if(x>1 && maze[x-2][y]==null && this.up==WALL){
-      available_directions.add(UP_TUNNEL);
-    }
-
-    if(y<mazeColCount-1 && maze[x][y+1]==null){
-      available_directions.add(RIGHT);
-    }
-    else if(y<mazeColCount-2 && maze[x][y+2]==null && this.right==WALL){
-      available_directions.add(RIGHT_TUNNEL);
-    }
-
-    if(x<mazeRowCount-1 && maze[x+1][y]==null){
-      available_directions.add(DOWN);
-    }
-    else if(x<mazeRowCount-2 && maze[x+2][y]==null && this.down==WALL){
-      available_directions.add(DOWN_TUNNEL);
-    }
-
-    if(y!=0 && maze[x][y-1]==null){
-      available_directions.add(LEFT);
-    }
-    else if(y>1 && maze[x][y-2]==null  && this.left==WALL){
-      available_directions.add(LEFT_TUNNEL);
-    }
-
-    if(y<mazeColCount-1 && maze[x][y+1]==null){
-      available_directions.add(RIGHT);
-    }
-    else if(y<mazeColCount-2 && maze[x][y+2]==null && this.right==WALL){
-      available_directions.add(RIGHT_TUNNEL);
-    }
-
-    if(available_directions.size()==0){
-      return NO_DIRECTION;
-    }
-
-    //decides randomly which of the available elements to select
-    return available_directions.get(generator.nextInt(available_directions.size()));
-
-  }
-
-  tile makePathway(int direction){
-    removeWall(direction);
-    return makeNewTile(direction);
-  }
-
-  void removeWall(int direction){
-
-    switch (direction) {
-        case UP:
-                  this.up=PASSAGE;
-                  break;
-        case DOWN:
-                  this.down=PASSAGE;
-                  break;
-        case LEFT:
-                  this.left=PASSAGE;
-                  break;
-        case RIGHT:
-                  this.right=PASSAGE;
-                  break;
-        case UP_TUNNEL:
-                  this.up=TUNNEL;
-                  break;
-        case DOWN_TUNNEL:
-                  this.down=TUNNEL;
-                  break;
-        case LEFT_TUNNEL:
-                  this.left=TUNNEL;
-                  break;
-        case RIGHT_TUNNEL:
-                  this.right=TUNNEL;
-                  break;
-    }//end switch
-
-  }//end-remove-wall
-
-  //makes a tile in the direction provided
-  tile makeNewTile(int direction){
-
-    int new_x = this.x;
-    int new_y = this.y;
-    int dir_opposite = direction;
-
-    switch (direction) {
-        case UP:           new_x-=1;
-                           dir_opposite = DOWN;
-                           break;
-        case DOWN:         new_x+=1;
-                           dir_opposite = UP;
-                           break;
-        case LEFT:         new_y-=1;
-                           dir_opposite = RIGHT;
-                           break;
-        case RIGHT:        new_y+=1;
-                           dir_opposite = LEFT;
-                           break;
-        case UP_TUNNEL:    new_x-=2;
-                           dir_opposite = DOWN_TUNNEL;
-                           break;
-        case DOWN_TUNNEL:  new_x+=2;
-                           dir_opposite = UP_TUNNEL;
-                           break;
-        case LEFT_TUNNEL:  new_y-=2;
-                           dir_opposite = RIGHT_TUNNEL;
-                           break;
-        case RIGHT_TUNNEL: new_y+=2;
-                           dir_opposite = LEFT_TUNNEL;
-                           break;
-    }//end switch
-
-    tile n = new tile(new_x,new_y);
-    n.removeWall(dir_opposite);
-    maze[n.x][n.y]=n;
-    return n;
-  }
-
-  //for a tile, return the points that can be accessed by it
-  //used in dijkstra's implementation
-  ArrayList<Point> getPaths(){
-    ArrayList<Point> available_directions = new ArrayList<Point>();
-
-    if(up==PASSAGE&&x!=0){
-      if(maze[x-1][y].visited==false)
-        available_directions.add(new Point(x-1,y));
-    }
-    else if(up==TUNNEL&&x>1){
-      if(maze[x-2][y].visited==false)
-        available_directions.add(new Point(x-2,y));
-    }
-
-    if(down==PASSAGE){
-      if(maze[x+1][y].visited==false)
-        available_directions.add(new Point(x+1,y));
-    }
-    else if(down==TUNNEL){
-      if(maze[x+2][y].visited==false)
-        available_directions.add(new Point(x+2,y));
-    }
-
-    if(left==PASSAGE&&y!=0){
-      if(maze[x][y-1].visited==false)
-        available_directions.add(new Point(x,y-1));
-    }
-    else if(left==TUNNEL&&y>1){
-      if(maze[x][y-2].visited==false)
-        available_directions.add(new Point(x,y-2));
-    }
-
-    if(right==PASSAGE){
-      if(maze[x][y+1].visited==false)
-        available_directions.add(new Point(x,y+1));
-    }
-    else if(right==TUNNEL){
-      if(maze[x][y+2].visited==false)
-        available_directions.add(new Point(x,y+2));
-    }
-
-    return available_directions;
-  }
-
-  //the number of walls this tile has
-  //3 walls means its a dead end
-  int countWalls()
-  {
-    int walls = 0;
-    if(up==WALL)
-      walls++;
-    if(down==WALL)
-      walls++;
-    if(left==WALL)
-      walls++;
-    if(right==WALL)
-      walls++;
-
-    return walls;
-  }
-
-//  prints
-  void display() {
-
-    //stupid bug where i accidentally rotated y and x, lol
-    int adjusted_x = (y*(box_width))+origin;
-    int adjusted_y = (x*(box_width))+origin;
-
-    //top_left points
-    int xx = adjusted_x;
-    int yy = adjusted_y;
-
-    noStroke();
-    rectMode(CENTER);
-    fill(0);
-
-    //box width must be greater than 10 and even
-    int line_thickness = ((box_width)/10)*2;
-
-    int line_length = (box_width)-(2*line_thickness);
-
-    int offset = ((box_width)/2)-line_thickness;
-
-    if(right!=WALL){
-      rect(adjusted_x+offset+(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
-      rect(adjusted_x+offset+(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
-    }
-    else{
-      rect(adjusted_x+offset, adjusted_y, line_thickness, line_length+line_thickness);
-    }
-
-    if(left!=WALL){
-      rect(adjusted_x-offset-(line_thickness/2), adjusted_y+offset, line_thickness*2, line_thickness);
-      rect(adjusted_x-offset-(line_thickness/2), adjusted_y-offset, line_thickness*2, line_thickness);
-    }
-    else{
-      rect(adjusted_x-offset, adjusted_y, line_thickness, line_length+line_thickness);
-    }
-
-    if(up!=WALL){
-      rect(adjusted_x-offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
-      rect(adjusted_x+offset, adjusted_y-offset-(line_thickness/2), line_thickness, line_thickness*2);
-    }
-    else{
-      rect(adjusted_x, adjusted_y-offset, line_length+line_thickness, line_thickness);
-    }
-
-    if(down!=WALL){
-      rect(adjusted_x+offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
-      rect(adjusted_x-offset, adjusted_y+offset+(line_thickness/2), line_thickness, line_thickness*2);
-    }
-    else{
-      rect(adjusted_x, adjusted_y+offset, line_length+line_thickness, line_thickness);
-    }
-
-  }//end display
-
-}//end tile class
-
-//own Point class
-class Point{
-  int x, y;
-
-  Point( int x, int y ){
-   this.x = x;
-   this.y = y;
-  }
-}
-
