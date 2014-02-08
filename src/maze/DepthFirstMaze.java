@@ -14,7 +14,7 @@ public class DepthFirstMaze extends AbstractMaze
 
     public void generate()
     {
-        this.maze = new Tile[this.rowCount][this.columnCount];
+        this.maze = new Tile[this.rows][this.columns];
         this.maze[start.getRow()][start.getCol()] = new Tile();
 
         Stack<Location> stack = new Stack<Location>();
@@ -37,6 +37,5 @@ public class DepthFirstMaze extends AbstractMaze
             }
 
         }
-
     }
 }

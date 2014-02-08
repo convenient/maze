@@ -4,13 +4,6 @@ void setup() {
         size(1200, 600);
 
         Helper.printInstructions();
-
-        Location start = new Location();
-        start.setRow(1);
-        start.setCol(2);
-
-        container.setMaze(new DepthFirstMaze(10, 25, start));
-
         container.generate();
         container.draw();
 }
@@ -28,11 +21,11 @@ void keyPressed() {
             container.boxWidth--;
             redraw = true;
             break;
-        case 'l':
+        case 'k':
             container.pipeOffset++;
             redraw = true;
             break;
-        case 'k':
+        case 'l':
             container.pipeOffset--;
             redraw = true;
             break;
@@ -42,6 +35,26 @@ void keyPressed() {
             break;
         case 'n':
             container.lineWidth--;
+            redraw = true;
+            break;
+        case 'w':
+            container.rows++;
+            container.generate();
+            redraw = true;
+            break;
+        case 'q':
+            container.rows--;
+            container.generate();
+            redraw = true;
+            break;
+        case 's':
+            container.columns++;
+            container.generate();
+            redraw = true;
+            break;
+        case 'a':
+            container.columns--;
+            container.generate();
             redraw = true;
             break;
         case 'g':
@@ -59,8 +72,10 @@ static class Helper {
     public static void printInstructions() {
         System.out.println("Decrease/Increase");
         System.out.println("Box Width:\t\tO/P");
-        System.out.println("Pipe Offset:\tK/L");
+        System.out.println("Pipe size:\t\tK/L");
         System.out.println("Line Width:\tN/M");
+        System.out.println("Rows:\t\tQ/W");
+        System.out.println("Columns:\t\tA/S");
 
         System.out.println();
         System.out.println("Generate Maze:\tG");
@@ -75,18 +90,28 @@ class GridContainer {
     public int pipeOffset;
     public int lineWidth;
 
+    public int rows;
+    public int columns;
+
     GridContainer() {
         this.boxWidth = 30;
         this.margin = 20;
         this.pipeOffset = 6;
         this.lineWidth = 5;
-    }
+        this.rows = 10;
+        this.columns = 25;
 
-    public void setMaze(DepthFirstMaze maze) {
-        this.maze = maze;
+        Location start = new Location();
+        start.setRow(0);
+        start.setCol(0);
+
+        this.maze = new DepthFirstMaze(this.rows, this.columns, start);
     }
 
     public void generate() {
+
+        this.maze.setRows(rows);
+        this.maze.setColumns(columns);
         maze.generate();
     }
 

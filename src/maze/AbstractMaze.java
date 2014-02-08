@@ -4,19 +4,33 @@ abstract class AbstractMaze {
 
     public Tile[][] maze;
 
-    public int columnCount;
-    public int rowCount;
+    public int columns;
+    public int rows;
 
     Location start = new Location();
 
     abstract void generate();
 
-    AbstractMaze(int rowCount, int columnCount, Location start)
+    AbstractMaze(int rows, int columns, Location start)
     {
-        this.rowCount = rowCount;
-        this.columnCount = columnCount;
+        this.rows = rows;
+        this.columns = columns;
 
         this.start = start;
+    }
+
+    public void setRows(int rows)
+    {
+        if(rows >= 1) {
+            this.rows = rows;
+        }
+    }
+
+    public void setColumns(int columns)
+    {
+        if(columns >=1) {
+            this.columns = columns;
+        }
     }
 
     private Location getNeighbourTileLocation(Location tile, int direction)
@@ -66,7 +80,7 @@ abstract class AbstractMaze {
             available_directions.add(Tile.DIR_NORTH);
         }
 
-        if(rowLocation < rowCount - 1 && maze[rowLocation+1][colLocation] == null){
+        if(rowLocation < rows - 1 && maze[rowLocation+1][colLocation] == null){
             available_directions.add(Tile.DIR_SOUTH);
         }
 
@@ -74,7 +88,7 @@ abstract class AbstractMaze {
             available_directions.add(Tile.DIR_WEST);
         }
 
-        if(colLocation < columnCount - 1 && maze[rowLocation][colLocation+1] == null){
+        if(colLocation < columns - 1 && maze[rowLocation][colLocation+1] == null){
             available_directions.add(Tile.DIR_EAST);
         }
 
