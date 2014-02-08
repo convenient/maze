@@ -1,76 +1,76 @@
 import java.util.ArrayList;
-import java.awt.Point;
 
 public class Grid {
 
     public Tile[][] grid;
 
-    private int maze_width;
-    private int maze_height;
+    private int columnCount;
+    private int rowCount;
 
-    public Grid(int width, int height)
+    public Grid(int rowCount, int columnCount)
     {
-        this.maze_height = height;
-        this.maze_width = width;
+        this.rowCount = rowCount;
+        this.columnCount = columnCount;
 
-        this.grid = new Tile[height][width];
+        this.grid = new Tile[rowCount][columnCount];
     }
 
-    private Point getNeighbourTileLocation(int heightLocation, int widthLocation, int direction)
+    private Location getNeighbourTileLocation(Location tile, int direction)
     {
-        Point point = new Point();
+        Location location = new Location(tile.getRow(), tile.getCol());
 
         switch (direction) {
             case Tile.DIR_NORTH:
-                heightLocation--;
+                location.row--;
                 break;
             case Tile.DIR_SOUTH:
-                heightLocation++;
+                location.row++;
                 break;
             case Tile.DIR_EAST:
-                widthLocation++;
+                location.col++;
                 break;
             case Tile.DIR_WEST:
-                widthLocation--;
+                location.col--;
                 break;
         }
-        point.setLocation(heightLocation, widthLocation);
-        return point;
+
+        return location;
     }
 
-    public Point doTileThing(int heightLocation, int widthLocation, int direction, int path)
+    public Location makePath(Location tile, int direction, int path)
     {
-        Point p = this.getNeighbourTileLocation(heightLocation, widthLocation, direction);
-        int endHeight = (int)p.getX();
-        int endWidth = (int)p.getY();
+        this.grid[tile.getRow()][tile.getCol()].setDirection(direction, path);
 
-        int reversedDirection = Tile.reverseDirection(direction);
+        Location newTileLocation = this.getNeighbourTileLocation(tile, direction);
 
-        this.grid[endHeight][endWidth] = new Tile();
+        Tile newTile = new Tile();
+        newTile.setDirection(Tile.reverseDirection(direction), path);
 
-        this.grid[heightLocation][widthLocation].setDirection(direction, path);
-        this.grid[endHeight][endWidth].setDirection(reversedDirection, path);
+        this.grid[newTileLocation.getRow()][newTileLocation.getCol()] = newTile;
 
-        return p;
+        return newTileLocation;
     }
 
-    public ArrayList<Integer> getUnvisitedNeighbours(int heightLocation, int widthLocation)
+    public ArrayList<Integer> getUnvisitedNeighbours(Location tile)
     {
         ArrayList<Integer> available_directions = new ArrayList<Integer>();
 
-        if (heightLocation != 0 && grid[heightLocation-1][widthLocation] == null) {
+        int rowLocation = tile.getRow();
+        int colLocation = tile.getCol();
+
+        if (rowLocation != 0 && grid[rowLocation-1][colLocation] == null) {
             available_directions.add(Tile.DIR_NORTH);
         }
 
-        if(heightLocation < maze_height-1 && grid[heightLocation+1][widthLocation] == null){
+        if(rowLocation < rowCount - 1 && grid[rowLocation+1][colLocation] == null){
             available_directions.add(Tile.DIR_SOUTH);
         }
 
-        if(widthLocation != 0 && grid[heightLocation][widthLocation-1] == null){
+        if(colLocation != 0 && grid[rowLocation][colLocation-1] == null){
             available_directions.add(Tile.DIR_WEST);
         }
 
-        if(widthLocation < maze_width-1 && grid[heightLocation][widthLocation+1] == null){
+        if(colLocation < columnCount - 1 && grid[rowLocation][colLocation+1] == null){
             available_directions.add(Tile.DIR_EAST);
         }
 

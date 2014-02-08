@@ -19,9 +19,8 @@ int screen_height = 600;
 int origin = 60;        //the amount of space to leave around the edge of the image
 int box_width = 28;     //the width of each box tile, must be an even?
 
-//28 and 9
-int maze_width = 28;
-int maze_height = 9;
+int mazeRowCount = 10;
+int mazeColCount = 25;
 
 int end_x = 0;
 int end_y = 0;
@@ -36,10 +35,13 @@ Stack stack;
 private Random generator = new Random();
 
 void setup() {
-  size(screen_width, screen_height);
+        size(screen_width, screen_height);
 
-        DepthFirstMaze maze = new DepthFirstMaze(maze_width, maze_height, 0, 0);
+        Location start = new Location();
+        start.setRow(1);
+        start.setCol(2);
 
+        DepthFirstMaze maze = new DepthFirstMaze(mazeRowCount, mazeColCount, start);
         maze.generate();
 
         printGrid(maze);
@@ -123,21 +125,21 @@ void keyPressed() {
     makeMaze();
   }
   if(key == 'W'){
-    maze_width++;
+    mazeColCount++;
     makeMaze();
   }
   if(key == 'w'){
-    maze_width--;
-    if(maze_width<2){maze_width=2;}
+    mazeColCount--;
+    if(mazeColCount<2){mazeColCount=2;}
     makeMaze();
   }
   if(key == 'H'){
-    maze_height++;
+    mazeRowCount++;
     makeMaze();
   }
   if(key == 'h'){
-    maze_height--;
-    if(maze_height<2){maze_height=2;}
+    mazeRowCount--;
+    if(mazeRowCount<2){mazeRowCount=2;}
     makeMaze();
   }
   if(key == 'S'){
@@ -175,7 +177,7 @@ void dijkstra(){
       int number_of_walls = maze[working.x][working.y].countWalls();
 
       if(number_of_walls==3){
-        if(working.x==maze_height-1||working.x==0||working.y==maze_width-1||working.y==0){
+        if(working.x==mazeRowCount-1||working.x==0||working.y==mazeColCount-1||working.y==0){
           end_x=working.x;
           end_y=working.y;
         }
@@ -192,7 +194,7 @@ void makeMaze(){
     //y-M-D
   generator.setSeed(19091990);
 
-  maze = new tile[maze_height][maze_width];
+  maze = new tile[mazeRowCount][mazeColCount];
 
   //clear the screen
   //set stroke to black
@@ -248,11 +250,11 @@ void makeMaze(){
   queue.add(new Point(0,0));
   maze[0][0].visited=true;
 
-  while(stack.size()!=((maze_width*maze_height)-1)){
+  while(stack.size()!=((mazeColCount*mazeRowCount)-1)){
     dijkstra();
   }
 
-  if(end_x==maze_height-1){
+  if(end_x==mazeRowCount-1){
     maze[end_x][end_y].removeWall(DOWN);
   }
   else if(end_x==0){
@@ -270,8 +272,8 @@ void makeMaze(){
 }//end make maze
 
 void drawMaze(){
-  for(int i=0;i<maze_height;i++){
-    for(int j=0;j<maze_width;j++){
+  for(int i=0;i<mazeRowCount;i++){
+    for(int j=0;j<mazeColCount;j++){
       tile temp= maze[i][j];
       if(temp !=null){
         temp.display();
@@ -311,17 +313,17 @@ class tile {
       available_directions.add(UP_TUNNEL);
     }
 
-    if(y<maze_width-1 && maze[x][y+1]==null){
+    if(y<mazeColCount-1 && maze[x][y+1]==null){
       available_directions.add(RIGHT);
     }
-    else if(y<maze_width-2 && maze[x][y+2]==null && this.right==WALL){
+    else if(y<mazeColCount-2 && maze[x][y+2]==null && this.right==WALL){
       available_directions.add(RIGHT_TUNNEL);
     }
 
-    if(x<maze_height-1 && maze[x+1][y]==null){
+    if(x<mazeRowCount-1 && maze[x+1][y]==null){
       available_directions.add(DOWN);
     }
-    else if(x<maze_height-2 && maze[x+2][y]==null && this.down==WALL){
+    else if(x<mazeRowCount-2 && maze[x+2][y]==null && this.down==WALL){
       available_directions.add(DOWN_TUNNEL);
     }
 
@@ -332,10 +334,10 @@ class tile {
       available_directions.add(LEFT_TUNNEL);
     }
 
-    if(y<maze_width-1 && maze[x][y+1]==null){
+    if(y<mazeColCount-1 && maze[x][y+1]==null){
       available_directions.add(RIGHT);
     }
-    else if(y<maze_width-2 && maze[x][y+2]==null && this.right==WALL){
+    else if(y<mazeColCount-2 && maze[x][y+2]==null && this.right==WALL){
       available_directions.add(RIGHT_TUNNEL);
     }
 

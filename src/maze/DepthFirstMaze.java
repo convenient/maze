@@ -1,44 +1,38 @@
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
-import java.awt.Point;
 
 public class DepthFirstMaze extends Grid
 {
-    int startHeight = 0;
-    int startWidth = 0;
-    Point start = new Point();
+    Location start = new Location();
     private Random randomGenerator = new Random();
 
-    public DepthFirstMaze(int width, int height, int start_x, int start_y)
+    public DepthFirstMaze(int rowCount, int colCount, Location start)
     {
-        super(width, height);
-        start.setLocation(start_x, start_y);
-        this.grid[start_x][start_y] = new Tile();
+        super(rowCount, colCount);
+        this.start = start;
+        this.grid[start.getRow()][start.getCol()] = new Tile();
     }
 
     public void generate()
     {
-        Stack stack = new Stack();
-        stack.push(start);
+        Stack<Location> stack = new Stack<Location>();
+        stack.push(this.start);
 
-        Point working;
+        Location working;
 
         while(!stack.empty()){
 
-            working = (Point)stack.peek();
+            working = stack.peek();
 
-            int hPos = (int)working.getX();
-            int wPos = (int)working.getY();
-
-            ArrayList<Integer> directions = this.getUnvisitedNeighbours(hPos, wPos);
+            ArrayList<Integer> directions = this.getUnvisitedNeighbours(working);
 
             if(directions.size()==0){
                 stack.pop();
             } else {
                 int direction = directions.get(randomGenerator.nextInt(directions.size()));
-                Point neighbourLocation = this.doTileThing(hPos, wPos, direction, Tile.PATH_FLAT);
-                stack.push(neighbourLocation);
+                Location newTile = this.makePath(working, direction, Tile.PATH_FLAT);
+                stack.push(newTile);
             }
 
         }
