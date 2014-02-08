@@ -9,7 +9,7 @@ void setup() {
         start.setRow(1);
         start.setCol(2);
 
-        container.setGrid(new DepthFirstMaze(10, 25, start));
+        container.setMaze(new DepthFirstMaze(10, 25, start));
 
         container.generate();
         container.draw();
@@ -73,7 +73,7 @@ static class Helper
 
 class GridContainer
 {
-    public DepthFirstMaze grid;
+    public DepthFirstMaze maze;
     public int boxWidth;
     public int margin;
     public int pipeOffset;
@@ -87,14 +87,14 @@ class GridContainer
         this.lineWidth = 5;
     }
 
-    public void setGrid(DepthFirstMaze grid)
+    public void setMaze(DepthFirstMaze maze)
     {
-        this.grid = grid;
+        this.maze = maze;
     }
 
     public void generate()
     {
-        grid.generate();
+        maze.generate();
     }
 
     public void draw()
@@ -104,10 +104,10 @@ class GridContainer
         strokeCap(ROUND);
         strokeWeight(lineWidth);
 
-        for (int row=0; row < grid.maze.length; row++) {
-            for (int col=0; col < grid.maze[row].length; col++) {
-                if (grid.maze[row][col] != null) {
-                    this.printTile(row, col, grid.maze[row][col]);
+        for (int row=0; row < maze.maze.length; row++) {
+            for (int col=0; col < maze.maze[row].length; col++) {
+                if (maze.maze[row][col] != null) {
+                    this.printTile(row, col, maze.maze[row][col]);
                 }
             }
         }
