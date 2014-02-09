@@ -3,7 +3,7 @@ GridContainer container = new GridContainer();
 void setup() {
         size(800, 400);
 
-        Helper.printInstructions();
+//        Helper.printInstructions();
         container.generate();
         container.draw();
 }

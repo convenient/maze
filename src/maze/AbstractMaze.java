@@ -35,7 +35,7 @@ abstract class AbstractMaze {
         }
     }
 
-    private Location getNeighbourTileLocation(Location tile, int direction)
+    public Location getNeighbourTileLocation(Location tile, int direction)
     {
         Location location = new Location(tile.getRow(), tile.getCol(), tile.getDepth());
 
@@ -94,6 +94,32 @@ abstract class AbstractMaze {
         if(colLocation < columns - 1 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_EAST)) == null){
             available_directions.add(Tile.DIR_EAST);
         }
+
+        ArrayList<Map<String, Tile>> eastArrayAttempt = new ArrayList<Map<String, Tile>>();
+
+        Map<String, Tile> tempEastMap = new HashMap<String, Tile>();
+
+        if (colLocation < columns -1) {
+            Location tempEast = new Location(tile.row, tile.col, tile.depth);
+
+            while(tempEast.col < columns -1 ) {
+                tempEast.col++;
+                Tile newTile = new Tile();
+                newTile.setDirection(Tile.DIR_WEST, Tile.PATH_DOWN);
+
+                if (this.getTileAt(tempEast) == null){
+                    tempEastMap.put(tempEast.getHashMapKey(), newTile);
+                    eastArrayAttempt.add(tempEastMap);
+                    break;
+                } else {
+                    Location underEast = new Location(tempEast.row, tempEast.col, -1);
+                    newTile.setDirection(Tile.DIR_EAST, Tile.PATH_DOWN);
+                    tempEastMap.put(underEast.getHashMapKey(), newTile);
+                }
+            }
+        }
+
+        System.out.println(eastArrayAttempt.size());
 
         return available_directions;
     }
