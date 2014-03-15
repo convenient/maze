@@ -1,11 +1,8 @@
 public class Location{
 
-    public int row;
-    public int col;
-    public int depth;
-
-    public Location() {
-    }
+    private int row;
+    private int col;
+    private int depth;
 
     public Location(int row, int col, int depth) {
         this.row = row;
@@ -15,12 +12,17 @@ public class Location{
 
     public int getRow()
     {
-        return this.row;
+        return row;
     }
 
     public int getCol()
     {
-        return this.col;
+        return col;
+    }
+
+    public int getDepth()
+    {
+        return depth;
     }
 
     public void setRow(int row)
@@ -38,22 +40,11 @@ public class Location{
         this.depth = depth;
     }
 
-    public int getDepth()
-    {
-        return this.depth;
-    }
-
     public String toString() {
         return getClass().getName() + "[row=" + row + ",col=" + col + ",depth=" + depth + "]";
     }
 
     public String getHashMapKey() {
         return getClass().getName() + "[row=" + row + ",col=" + col + ",depth=" + depth + "]";
-    }
-
-    public void set(int row, int col, int depth) {
-        this.row = row;
-        this.col = col;
-        this.depth = depth;
     }
 }

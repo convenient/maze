@@ -11,13 +11,66 @@ class Tile {
     public static final int DIR_WEST = 3;
 
     int[] dir;
+    Location location;
 
-    public Tile() {
+    public Tile(Location l)
+    {
+        this.location = l;
         this.dir = new int[4];
         this.dir[DIR_NORTH] = PATH_NONE;
         this.dir[DIR_EAST] = PATH_NONE;
         this.dir[DIR_SOUTH] = PATH_NONE;
         this.dir[DIR_WEST] = PATH_NONE;
+    }
+
+    public Tile connect(int direction)
+    {
+        this.setDirection(direction, PATH_FLAT);
+        Tile newTile = new Tile(this.getNeighbourLocation(direction));
+        newTile.setDirection(getOppositeDirection(direction), PATH_FLAT);
+
+        return newTile;
+    }
+
+    public Location getNeighbourLocation(int direction)
+    {
+        Location neighbourLocation = new Location(this.location.getRow(), this.location.getCol(), this.location.getDepth());
+
+        switch (direction) {
+            case Tile.DIR_NORTH:
+                neighbourLocation.setRow(neighbourLocation.getRow()-1);
+                break;
+            case Tile.DIR_SOUTH:
+                neighbourLocation.setRow(neighbourLocation.getRow()+1);
+                break;
+            case Tile.DIR_EAST:
+                neighbourLocation.setCol(neighbourLocation.getCol()+1);
+                break;
+            case Tile.DIR_WEST:
+                neighbourLocation.setCol(neighbourLocation.getCol()-1);
+                break;
+        }
+        return neighbourLocation;
+    }
+
+    public void setLocation(Location l)
+    {
+        this.location = l;
+    }
+
+    public void setLocation(int row, int col, int depth)
+    {
+        this.location = new Location(row, col, depth);
+    }
+
+    public Location getLocation()
+    {
+        return this.location;
+    }
+
+    public String getKey()
+    {
+        return this.location.getHashMapKey();
     }
 
     public int getNumberOfPaths() {
@@ -83,7 +136,7 @@ class Tile {
         return this.getDirection(DIR_EAST);
     }
 
-    public static int reverseDirection(int direction)
+    public static int getOppositeDirection(int direction)
     {
         int returnDirection = DIR_SOUTH;
         switch(direction) {
