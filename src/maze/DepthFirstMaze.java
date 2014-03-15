@@ -42,13 +42,65 @@ public class DepthFirstMaze extends AbstractMaze
         l = this.makePath(l, Tile.DIR_EAST, Tile.PATH_FLAT);
 
 
-        ArrayList<Map<String, Tile>> directions = this.getUnvisitedNeighboursA(l);
+        ArrayList<Map<String, Tile>> directions = this.getUnvisitedNeighbours(l);
         Map<String, Tile> path = directions.get(randomGenerator.nextInt(directions.size()));
 
         for (Map.Entry entry : path.entrySet()) {
             this.map.put((String)entry.getKey(), (Tile)entry.getValue());
         }
 
+    }
+
+    public ArrayList<Integer> getUnvisitedNeighboursB(Location tile)
+    {
+        ArrayList<Integer> available_directions = new ArrayList<Integer>();
+
+        int rowLocation = tile.getRow();
+        int colLocation = tile.getCol();
+
+        if (rowLocation != 0 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_NORTH)) == null) {
+            available_directions.add(Tile.DIR_NORTH);
+        }
+
+        if(rowLocation < rows - 1 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_SOUTH)) == null){
+            available_directions.add(Tile.DIR_SOUTH);
+        }
+
+        if(colLocation != 0 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_WEST)) == null){
+            available_directions.add(Tile.DIR_WEST);
+        }
+
+        if(colLocation < columns - 1 && this.getTileAt(this.getNeighbourTileLocation(tile, Tile.DIR_EAST)) == null){
+            available_directions.add(Tile.DIR_EAST);
+        }
+
+        ArrayList<Map<String, Tile>> eastArrayAttempt = new ArrayList<Map<String, Tile>>();
+
+        Map<String, Tile> tempEastMap = new HashMap<String, Tile>();
+
+        if (colLocation < columns -1) {
+            Location tempEast = new Location(tile.row, tile.col, tile.depth);
+
+            while(tempEast.col < columns -1 ) {
+                tempEast.col++;
+                Tile newTile = new Tile();
+                newTile.setDirection(Tile.DIR_WEST, Tile.PATH_DOWN);
+
+                if (this.getTileAt(tempEast) == null){
+                    tempEastMap.put(tempEast.getHashMapKey(), newTile);
+                    eastArrayAttempt.add(tempEastMap);
+                    break;
+                } else {
+                    Location underEast = new Location(tempEast.row, tempEast.col, -1);
+                    newTile.setDirection(Tile.DIR_EAST, Tile.PATH_DOWN);
+                    tempEastMap.put(underEast.getHashMapKey(), newTile);
+                }
+            }
+        }
+
+        System.out.println(eastArrayAttempt.size());
+
+        return available_directions;
     }
 
     public ArrayList<Map<String, Tile>> getUnvisitedNeighboursA(Location tile)

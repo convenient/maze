@@ -110,7 +110,6 @@ class GridContainer {
     }
 
     public void generate() {
-
         this.maze.setRows(rows);
         this.maze.setColumns(columns);
         maze.generate();
