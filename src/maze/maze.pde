@@ -103,6 +103,16 @@ class GridContainer {
         this.rows = 10;
         this.columns = 25;
 
+        /**
+         * Coords work as follows, be aware to avoid intersections
+         *
+         * 0,0       -->         0,20
+         *
+         *  ^                      |
+         *  |                      v
+         *
+         * 10,0      <--        10,20
+         */
 //        Rectangle
 //        int xpoints[] = {0,0,10,10};
 //        int ypoints[] = {0,20,20,0};
