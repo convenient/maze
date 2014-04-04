@@ -41,10 +41,12 @@ public class Location{
     }
 
     public String toString() {
-        return getClass().getName() + "[row=" + row + ",col=" + col + ",depth=" + depth + "]";
+        return getClass().getName() + "[row=" + row + ",col=" + col + "]";
+//        return getClass().getName() + "[row=" + row + ",col=" + col + ",depth=" + depth + "]";
     }
 
     public String getHashMapKey() {
-        return getClass().getName() + "[row=" + row + ",col=" + col + ",depth=" + depth + "]";
+        return getClass().getName() + "[row=" + row + ",col=" + col + "]";
+//        return getClass().getName() + "[row=" + row + ",col=" + col + ",depth=" + depth + "]";
     }
 }

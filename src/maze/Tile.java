@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 class Tile {
 
     public static final int PATH_NONE = 9;
@@ -32,8 +34,44 @@ class Tile {
         return newTile;
     }
 
+    public ArrayList<Location> getNeighbourTileLocations()
+    {
+        ArrayList<Location> neighbours = new ArrayList<Location>();
+
+        if (this.getNorth() != PATH_NONE)
+            neighbours.add(getNeighbourLocation(DIR_NORTH));
+        if (this.getEast() != PATH_NONE)
+            neighbours.add(getNeighbourLocation(DIR_EAST));
+        if (this.getSouth() != PATH_NONE)
+            neighbours.add(getNeighbourLocation(DIR_SOUTH));
+        if (this.getWest() != PATH_NONE)
+            neighbours.add(getNeighbourLocation(DIR_WEST));
+
+        return neighbours;
+    }
+
+    public ArrayList<Integer> getPathDirections()
+    {
+        ArrayList<Integer> paths = new ArrayList<Integer>();
+
+        if (this.getNorth() != PATH_NONE)
+            paths.add(DIR_NORTH);
+        if (this.getEast() != PATH_NONE)
+            paths.add(DIR_EAST);
+        if (this.getSouth() != PATH_NONE)
+            paths.add(DIR_SOUTH);
+        if (this.getWest() != PATH_NONE)
+            paths.add(DIR_WEST);
+
+        return paths;
+
+    }
+
     public Location getNeighbourLocation(int direction)
     {
+        /**
+         * todo use clone
+         */
         Location neighbourLocation = new Location(this.location.getRow(), this.location.getCol(), this.location.getDepth());
 
         switch (direction) {
@@ -73,19 +111,6 @@ class Tile {
         return this.location.getHashMapKey();
     }
 
-    public int getNumberOfPaths() {
-        int paths = 0;
-        if (this.getNorth() != PATH_NONE)
-            paths++;
-        if (this.getEast() != PATH_NONE)
-            paths++;
-        if (this.getSouth() != PATH_NONE)
-            paths++;
-        if (this.getWest() != PATH_NONE)
-            paths++;
-
-        return paths;
-    }
     public void setDirection(int dir, int path)
     {
         this.dir[dir] = path;

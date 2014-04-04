@@ -10,12 +10,12 @@ public class DepthFirstMaze
 
     private Location startLoc;
 
-    public DepthFirstMaze(Polygon boundary, int startRow, int startCol, int startDepth)
+    public DepthFirstMaze(Polygon boundary, Location start)
     {
-        this.startLoc = new Location(startRow, startCol, startDepth);
+        this.startLoc = start;
         this.boundary = boundary;
 
-//        randomGenerator.setSeed(19091990);
+        randomGenerator.setSeed(19091990);
     }
 
     public void addToHashMap(Tile tile)
@@ -53,6 +53,39 @@ public class DepthFirstMaze
         }
     }
 
+    public Boolean isBoundaryEdge(Tile t)
+    {
+        Location loc = t.getNeighbourLocation(Tile.DIR_NORTH);
+        int row = loc.getRow();
+        int col = loc.getCol();
+        if (!boundary.contains(row, col)) {
+            return true;
+        }
+
+        loc = t.getNeighbourLocation(Tile.DIR_SOUTH);
+        row = loc.getRow();
+        col = loc.getCol();
+        if (!boundary.contains(row, col)) {
+            return true;
+        }
+
+        loc = t.getNeighbourLocation(Tile.DIR_EAST);
+        row = loc.getRow();
+        col = loc.getCol();
+        if (!boundary.contains(row, col)) {
+            return true;
+        }
+
+        loc = t.getNeighbourLocation(Tile.DIR_WEST);
+        row = loc.getRow();
+        col = loc.getCol();
+        if (!boundary.contains(row, col)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public ArrayList<Integer> getPotentialNeighbours(Tile tile)
     {
         ArrayList<Integer> available_directions = new ArrayList<Integer>();
@@ -73,6 +106,30 @@ public class DepthFirstMaze
         if (boundary.contains(row, col) && getFromHashMap(loc) == null) {
             available_directions.add(direction);
         }
+    }
+
+    public ArrayList<Tile> getNeighbouringTiles(Tile t)
+    {
+        ArrayList<Tile> neighbours = new ArrayList<Tile>();
+
+        Tile north = getFromHashMap(t.getNeighbourLocation(Tile.DIR_NORTH));
+        if (north != null) {
+            neighbours.add(north);
+        }
+        Tile south = getFromHashMap(t.getNeighbourLocation(Tile.DIR_SOUTH));
+        if (south != null) {
+            neighbours.add(south);
+        }
+        Tile east = getFromHashMap(t.getNeighbourLocation(Tile.DIR_EAST));
+        if (east != null) {
+            neighbours.add(east);
+        }
+        Tile west = getFromHashMap(t.getNeighbourLocation(Tile.DIR_WEST));
+        if (west != null) {
+            neighbours.add(west);
+        }
+
+        return neighbours;
     }
 
 //    public ArrayList<Integer> getUnvisitedNeighboursB(Location tile)

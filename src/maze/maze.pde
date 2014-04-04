@@ -1,11 +1,12 @@
 import java.awt.*;
+import java.util.*;
 
 GridContainer container = new GridContainer();
 
 void setup() {
         size(800, 400);
 
-        Helper.printInstructions();
+//        Helper.printInstructions();
         container.generate();
         container.draw();
 }
@@ -87,6 +88,7 @@ static class Helper {
 
 class GridContainer {
     public DepthFirstMaze maze;
+    public PathFinder pathFinder;
     public int boxWidth;
     public int margin;
     public int pipeOffset;
@@ -95,13 +97,20 @@ class GridContainer {
     public int rows;
     public int columns;
 
+    public Location start;
+
     GridContainer() {
-        this.boxWidth = 30;
-        this.margin = 20;
-        this.pipeOffset = 6;
-        this.lineWidth = 5;
-        this.rows = 10;
-        this.columns = 25;
+//        this.boxWidth = 30;
+//        this.margin = 50;
+//        this.pipeOffset = 6;
+//        this.lineWidth = 5;
+//        this.rows = 10;
+//        this.columns = 25;
+        this.margin = 50;
+
+        this.boxWidth = 15;
+        this.pipeOffset = 0;
+        this.lineWidth = 1;
 
         /**
          * Coords work as follows, be aware to avoid intersections
@@ -117,13 +126,25 @@ class GridContainer {
 //        int xpoints[] = {0,0,10,10};
 //        int ypoints[] = {0,20,20,0};
 
+        start = new Location(6,10,0);
+
 //        Sliced
-        int xpoints[] = {0 ,5 ,0 ,10,10};
-        int ypoints[] = {0 ,10,20,20,0 };
 
-        Polygon boundary = new Polygon(xpoints, ypoints, xpoints.length);
+        Polygon boundary = new Polygon();
+        boundary.addPoint(0,10);
+        boundary.addPoint(0,21);
+        boundary.addPoint(10,31);
+        boundary.addPoint(21,21);
+        boundary.addPoint(21,10);
+        boundary.addPoint(10,0);
 
-        maze = new DepthFirstMaze(boundary, 0, 0, 0);
+//        boundary.addPoint(-10,0);
+//        boundary.addPoint(-21,0);
+//        boundary.addPoint(-21,21);
+//        boundary.addPoint(-10,21);
+
+        maze = new DepthFirstMaze(boundary, start);
+        pathFinder = new PathFinder(maze);
     }
 
     public void generate() {
@@ -132,15 +153,68 @@ class GridContainer {
 
     public void draw() {
         background(255);
-        noFill();
         strokeCap(ROUND);
         strokeWeight(lineWidth);
 
+
+//        Stack<Tile> longestPath = new Stack<Tile>();
+//        for (Map.Entry entry : maze.map.entrySet()) {
+//            Tile t = (Tile)entry.getValue();
+//            if (t.getPathDirections().size() == 1 && maze.isBoundaryEdge(t)) {
+//                Stack<Tile> path = this.pathFinder.get(start, t.getLocation());
+//                if (path.size() > longestPath.size()) {
+//                    longestPath = path;
+//                }
+//                break;
+//            }
+//        }
+//
+//        lolmakehighway(longestPath.peek());
+//        Tile lastTile = new Tile(new Location(-1, -1, -1));
+//        while (!longestPath.empty()) {
+//            lastTile = longestPath.pop();
+////            markTile(lastTile);
+//        }
+//        lolmakehighway(lastTile);
+
+//        markTile(maze.getFromHashMap(start));
         //Iterate through the hashmap and print all tiles
         for (Map.Entry entry : maze.map.entrySet()) {
             Tile t = (Tile)entry.getValue();
             printTile(t);
         }
+    }
+
+    private void lolmakehighway(Tile t)
+    {
+        ArrayList<Integer> pathDirections = t.getPathDirections();
+        int direction = Tile.getOppositeDirection(pathDirections.get(0));
+
+        Location attemptedHighway = t.getNeighbourLocation(direction);
+
+        if (maze.getFromHashMap(attemptedHighway) != null) {
+
+            //If the ideal straight line exit is blocked, brutely try and find the free path
+            ArrayList<Integer> potentialDirections = new ArrayList<Integer>();
+            potentialDirections.add(Tile.DIR_NORTH);
+            potentialDirections.add(Tile.DIR_SOUTH);
+            potentialDirections.add(Tile.DIR_WEST);
+            potentialDirections.add(Tile.DIR_EAST);
+
+            for (Integer dir : potentialDirections) {
+                if (dir != direction) {
+                    attemptedHighway = t.getNeighbourLocation(dir);
+                    if (maze.getFromHashMap(attemptedHighway) == null) {
+                        direction = dir;
+                        break;
+                    }
+                }
+            }
+        }
+
+        Tile vestibule = t.connect(direction);
+        vestibule.setDirection(direction, Tile.PATH_FLAT);
+        maze.addToHashMap(vestibule);
     }
 
     public void printTile(Tile tile)
@@ -220,6 +294,21 @@ class GridContainer {
                 break;
         }
 
+    }
+
+    public void markTile(Tile tile)
+    {
+        Location tLoc = tile.getLocation();
+        int row = tLoc.getRow();
+        int col = tLoc.getCol();
+
+        int adjustedRow = (row * (boxWidth)) + margin;
+        int adjustedCol = (col * boxWidth) + margin;
+
+        int topLeftX = adjustedCol;
+        int topLeftY = adjustedRow;
+
+        ellipse(topLeftX+boxWidth/2, topLeftY+boxWidth/2, boxWidth/7, boxWidth/7);
     }
 
 }
