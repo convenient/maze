@@ -13,21 +13,19 @@ public class PathFinder
         this.maze = maze;
     }
 
-    public Stack<Tile> get(Location startLoc, Location endLoc)
+    public ArrayList<Tile> get(Location startLoc, Location endLoc)
     {
         Map<String, String> trail = getAllPathsSolution(startLoc);
 
-        /**
-         * Return getId stack of tiles in order
-         */
-        Stack<Tile> stack = new Stack<Tile>();
+        ArrayList<Tile> list = new ArrayList<Tile>();
+
         String pathBack = endLoc.getHashMapKey();
         while (!pathBack.equals(beginning)) {
-            stack.push(maze.map.get(pathBack));
+            list.add(maze.map.get(pathBack));
             pathBack = trail.get(pathBack);
         }
 
-        return stack;
+        return list;
     }
 
     private Map<String, String> getAllPathsSolution(Location location)

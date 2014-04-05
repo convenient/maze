@@ -126,26 +126,30 @@ class GridContainer {
 
     public void generateEntranceAndExit() {
 
-        Stack<Tile> longestPath = new Stack<Tile>();
+        ArrayList<Tile> longestPath = new ArrayList<Tile>();
+
         for (Map.Entry entry : maze.map.entrySet()) {
             Tile t = (Tile)entry.getValue();
 
             if (t.getPathDirections().size() == 1 && maze.isBoundaryEdge(t)) {
-                Stack<Tile> path = pathFinder.get(entrance, t.getLocation());
+                ArrayList<Tile> path = pathFinder.get(entrance, t.getLocation());
                 if (path.size() > longestPath.size()) {
                     longestPath = path;
                 }
             }
         }
 
-        lolmakehighway(longestPath.peek());
+        if (longestPath.size() >= 2) {
+            Tile lastTile = longestPath.get(0);
+            Tile firstTile = longestPath.get(longestPath.size() -1);
 
-        Tile lastTile = new Tile(new Location(-1, -1));
-        while (!longestPath.empty()) {
-            lastTile = longestPath.pop();
+            lolmakehighway(firstTile);
+            lolmakehighway(lastTile);
+
+            exit = lastTile.getLocation();
+        } else {
+            System.out.println("No viable path exists");
         }
-        exit = lastTile.getLocation();
-        lolmakehighway(lastTile);
     }
 
     public void draw() {
