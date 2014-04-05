@@ -1,5 +1,5 @@
+import java.awt.*;
 import java.util.*;
-import java.awt.Polygon;
 
 public class DepthFirstMaze
 {
@@ -8,14 +8,11 @@ public class DepthFirstMaze
     private Random randomGenerator = new Random();
     private Polygon boundary;
 
-    private Location startLoc;
-
-    public DepthFirstMaze(Polygon boundary, Location start)
+    public DepthFirstMaze(Polygon boundary)
     {
-        this.startLoc = start;
-        this.boundary = boundary;
-
         randomGenerator.setSeed(19091990);
+
+        this.boundary = boundary;
     }
 
     public void addTile(Tile tile)
@@ -28,12 +25,24 @@ public class DepthFirstMaze
         return map.get(l.getHashMapKey());
     }
 
+    private Location getStartLocation()
+    {
+        Rectangle innerRectangle = boundary.getBounds();
+        while (true) {
+            int randomRow = randomGenerator.nextInt((int)innerRectangle.getWidth()) + (int)innerRectangle.getX();
+            int randomCol = randomGenerator.nextInt((int)innerRectangle.getHeight()) + (int)innerRectangle.getY();
+            if (boundary.contains(randomRow, randomCol)) {
+                return new Location(randomRow, randomCol);
+            }
+        }
+    }
+
     public void generate()
     {
         Stack<Tile> stack = new Stack<Tile>();
         map.clear();
 
-        Tile beginning = new Tile(startLoc);
+        Tile beginning = new Tile(getStartLocation());
         addTile(beginning);
         stack.push(beginning);
 
