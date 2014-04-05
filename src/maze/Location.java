@@ -2,12 +2,10 @@ public class Location{
 
     private int row;
     private int col;
-    private int depth;
 
-    public Location(int row, int col, int depth) {
+    public Location(int row, int col) {
         this.row = row;
         this.col = col;
-        this.depth = depth;
     }
 
     public int getRow()
@@ -20,11 +18,6 @@ public class Location{
         return col;
     }
 
-    public int getDepth()
-    {
-        return depth;
-    }
-
     public void setRow(int row)
     {
         this.row = row;
@@ -35,18 +28,16 @@ public class Location{
         this.col = col;
     }
 
-    public void setDepth(int depth)
+    public Location clone()
     {
-        this.depth = depth;
+        return new Location(getRow(), getCol());
     }
 
     public String toString() {
         return getClass().getName() + "[row=" + row + ",col=" + col + "]";
-//        return getClass().getName() + "[row=" + row + ",col=" + col + ",depth=" + depth + "]";
     }
 
     public String getHashMapKey() {
         return getClass().getName() + "[row=" + row + ",col=" + col + "]";
-//        return getClass().getName() + "[row=" + row + ",col=" + col + ",depth=" + depth + "]";
     }
 }

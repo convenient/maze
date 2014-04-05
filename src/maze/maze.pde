@@ -71,8 +71,8 @@ void keyPressed() {
     }
 }
 
-static class Helper {
-    public static void printInstructions() {
+class Helper {
+    public void printInstructions() {
         System.out.println("Decrease/Increase");
         System.out.println("Box Width:\t\tO/P");
         System.out.println("Pipe size:\t\tK/L");
@@ -126,17 +126,21 @@ class GridContainer {
 //        int xpoints[] = {0,0,10,10};
 //        int ypoints[] = {0,20,20,0};
 
-        start = new Location(6,10,0);
+        start = new Location(6,10);
 
-//        Sliced
 
         Polygon boundary = new Polygon();
-        boundary.addPoint(0,10);
-        boundary.addPoint(0,21);
-        boundary.addPoint(10,31);
-        boundary.addPoint(21,21);
-        boundary.addPoint(21,10);
-        boundary.addPoint(10,0);
+        boundary.addPoint(0, 0);
+        boundary.addPoint(0, 30);
+        boundary.addPoint(13, 30);
+        boundary.addPoint(13, 0);
+
+//        boundary.addPoint(0,10);
+//        boundary.addPoint(0,21);
+//        boundary.addPoint(10,31);
+//        boundary.addPoint(21,21);
+//        boundary.addPoint(21,10);
+//        boundary.addPoint(10,0);
 
 //        boundary.addPoint(-10,0);
 //        boundary.addPoint(-21,0);
@@ -188,7 +192,7 @@ class GridContainer {
     private void lolmakehighway(Tile t)
     {
         ArrayList<Integer> pathDirections = t.getPathDirections();
-        int direction = Tile.getOppositeDirection(pathDirections.get(0));
+        int direction = Direction.getOpposite(pathDirections.get(0));
 
         Location attemptedHighway = t.getNeighbourLocation(direction);
 
@@ -196,10 +200,10 @@ class GridContainer {
 
             //If the ideal straight line exit is blocked, brutely try and find the free path
             ArrayList<Integer> potentialDirections = new ArrayList<Integer>();
-            potentialDirections.add(Tile.DIR_NORTH);
-            potentialDirections.add(Tile.DIR_SOUTH);
-            potentialDirections.add(Tile.DIR_WEST);
-            potentialDirections.add(Tile.DIR_EAST);
+            potentialDirections.add(Direction.UP);
+            potentialDirections.add(Direction.DOWN);
+            potentialDirections.add(Direction.LEFT);
+            potentialDirections.add(Direction.RIGHT);
 
             for (Integer dir : potentialDirections) {
                 if (dir != direction) {

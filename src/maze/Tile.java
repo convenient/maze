@@ -7,11 +7,6 @@ class Tile {
     public static final int PATH_FLAT = 0;
     public static final int PATH_UP = +1;
 
-    public static final int DIR_NORTH = 0;
-    public static final int DIR_EAST = 1;
-    public static final int DIR_SOUTH = 2;
-    public static final int DIR_WEST = 3;
-
     int[] dir;
     Location location;
 
@@ -19,17 +14,17 @@ class Tile {
     {
         this.location = l;
         this.dir = new int[4];
-        this.dir[DIR_NORTH] = PATH_NONE;
-        this.dir[DIR_EAST] = PATH_NONE;
-        this.dir[DIR_SOUTH] = PATH_NONE;
-        this.dir[DIR_WEST] = PATH_NONE;
+        this.dir[Direction.UP] = PATH_NONE;
+        this.dir[Direction.RIGHT] = PATH_NONE;
+        this.dir[Direction.DOWN] = PATH_NONE;
+        this.dir[Direction.LEFT] = PATH_NONE;
     }
 
     public Tile connect(int direction)
     {
-        this.setDirection(direction, PATH_FLAT);
-        Tile newTile = new Tile(this.getNeighbourLocation(direction));
-        newTile.setDirection(getOppositeDirection(direction), PATH_FLAT);
+        setDirection(direction, PATH_FLAT);
+        Tile newTile = new Tile(getNeighbourLocation(direction));
+        newTile.setDirection(Direction.getOpposite(direction), PATH_FLAT);
 
         return newTile;
     }
@@ -39,13 +34,13 @@ class Tile {
         ArrayList<Location> neighbours = new ArrayList<Location>();
 
         if (this.getNorth() != PATH_NONE)
-            neighbours.add(getNeighbourLocation(DIR_NORTH));
+            neighbours.add(getNeighbourLocation(Direction.UP));
         if (this.getEast() != PATH_NONE)
-            neighbours.add(getNeighbourLocation(DIR_EAST));
+            neighbours.add(getNeighbourLocation(Direction.RIGHT));
         if (this.getSouth() != PATH_NONE)
-            neighbours.add(getNeighbourLocation(DIR_SOUTH));
+            neighbours.add(getNeighbourLocation(Direction.DOWN));
         if (this.getWest() != PATH_NONE)
-            neighbours.add(getNeighbourLocation(DIR_WEST));
+            neighbours.add(getNeighbourLocation(Direction.LEFT));
 
         return neighbours;
     }
@@ -55,13 +50,13 @@ class Tile {
         ArrayList<Integer> paths = new ArrayList<Integer>();
 
         if (this.getNorth() != PATH_NONE)
-            paths.add(DIR_NORTH);
+            paths.add(Direction.UP);
         if (this.getEast() != PATH_NONE)
-            paths.add(DIR_EAST);
+            paths.add(Direction.RIGHT);
         if (this.getSouth() != PATH_NONE)
-            paths.add(DIR_SOUTH);
+            paths.add(Direction.DOWN);
         if (this.getWest() != PATH_NONE)
-            paths.add(DIR_WEST);
+            paths.add(Direction.LEFT);
 
         return paths;
 
@@ -69,22 +64,19 @@ class Tile {
 
     public Location getNeighbourLocation(int direction)
     {
-        /**
-         * todo use clone
-         */
-        Location neighbourLocation = new Location(this.location.getRow(), this.location.getCol(), this.location.getDepth());
+        Location neighbourLocation = location.clone();
 
         switch (direction) {
-            case Tile.DIR_NORTH:
+            case Direction.UP:
                 neighbourLocation.setRow(neighbourLocation.getRow()-1);
                 break;
-            case Tile.DIR_SOUTH:
+            case Direction.DOWN:
                 neighbourLocation.setRow(neighbourLocation.getRow()+1);
                 break;
-            case Tile.DIR_EAST:
+            case Direction.RIGHT:
                 neighbourLocation.setCol(neighbourLocation.getCol()+1);
                 break;
-            case Tile.DIR_WEST:
+            case Direction.LEFT:
                 neighbourLocation.setCol(neighbourLocation.getCol()-1);
                 break;
         }
@@ -96,9 +88,9 @@ class Tile {
         this.location = l;
     }
 
-    public void setLocation(int row, int col, int depth)
+    public void setLocation(int row, int col)
     {
-        this.location = new Location(row, col, depth);
+        this.location = new Location(row, col);
     }
 
     public Location getLocation()
@@ -118,22 +110,22 @@ class Tile {
 
     public void setNorth(int path)
     {
-        this.setDirection(DIR_NORTH, path);
+        this.setDirection(Direction.UP, path);
     }
 
     public void setSouth(int path)
     {
-        this.setDirection(DIR_SOUTH, path);
+        this.setDirection(Direction.DOWN, path);
     }
 
     public void setEast(int path)
     {
-        this.setDirection(DIR_EAST, path);
+        this.setDirection(Direction.RIGHT, path);
     }
 
     public void setWest(int path)
     {
-        this.setDirection(DIR_WEST, path);
+        this.setDirection(Direction.LEFT, path);
     }
 
     public int getDirection(int dir)
@@ -143,42 +135,22 @@ class Tile {
 
     public int getNorth()
     {
-        return this.getDirection(DIR_NORTH);
+        return this.getDirection(Direction.UP);
     }
 
     public int getSouth()
     {
-        return this.getDirection(DIR_SOUTH);
+        return this.getDirection(Direction.DOWN);
     }
 
     public int getWest()
     {
-        return this.getDirection(DIR_WEST);
+        return this.getDirection(Direction.LEFT);
     }
 
     public int getEast()
     {
-        return this.getDirection(DIR_EAST);
-    }
-
-    public static int getOppositeDirection(int direction)
-    {
-        int returnDirection = DIR_SOUTH;
-        switch(direction) {
-            case DIR_NORTH:
-                returnDirection = DIR_SOUTH;
-                break;
-            case DIR_EAST:
-                returnDirection = DIR_WEST;
-                break;
-            case DIR_SOUTH:
-                returnDirection = DIR_NORTH;
-                break;
-            case DIR_WEST:
-                returnDirection = DIR_EAST;
-                break;
-        }
-        return returnDirection;
+        return this.getDirection(Direction.RIGHT);
     }
 
     public String toString() {
