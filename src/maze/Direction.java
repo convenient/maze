@@ -1,4 +1,4 @@
-public class Direction
+public final class Direction
 {
     public static final int UP = 0;
     public static final int RIGHT = 1;

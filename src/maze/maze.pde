@@ -5,8 +5,6 @@ GridContainer container = new GridContainer();
 
 void setup() {
         size(800, 400);
-
-//        Helper.printInstructions();
         container.generate();
         container.draw();
 }
@@ -22,6 +20,7 @@ void keyPressed() {
             break;
         case 'o':
             container.boxWidth--;
+
             redraw = true;
             break;
         case 'k':
@@ -38,26 +37,9 @@ void keyPressed() {
             break;
         case 'n':
             container.lineWidth--;
-            redraw = true;
-            break;
-        case 'w':
-            container.rows++;
-            container.generate();
-            redraw = true;
-            break;
-        case 'q':
-            container.rows--;
-            container.generate();
-            redraw = true;
-            break;
-        case 's':
-            container.columns++;
-            container.generate();
-            redraw = true;
-            break;
-        case 'a':
-            container.columns--;
-            container.generate();
+            if (container.lineWidth <= 0) {
+                container.lineWidth = 1;
+            }
             redraw = true;
             break;
         case 'g':
@@ -68,21 +50,6 @@ void keyPressed() {
 
     if (redraw) {
         container.draw();
-    }
-}
-
-class Helper {
-    public void printInstructions() {
-        System.out.println("Decrease/Increase");
-        System.out.println("Box Width:\t\tO/P");
-        System.out.println("Pipe size:\t\tK/L");
-        System.out.println("Line Width:\tN/M");
-        System.out.println("Rows:\t\tQ/W");
-        System.out.println("Columns:\t\tA/S");
-
-        System.out.println();
-        System.out.println("Generate Maze:\tG");
-
     }
 }
 
@@ -97,7 +64,8 @@ class GridContainer {
     public int rows;
     public int columns;
 
-    public Location start;
+    public Location entrance;
+    public Location exit;
 
     GridContainer() {
 //        this.boxWidth = 30;
@@ -126,7 +94,7 @@ class GridContainer {
 //        int xpoints[] = {0,0,10,10};
 //        int ypoints[] = {0,20,20,0};
 
-        start = new Location(6,10);
+        entrance = new Location(6,0);
 
 
         Polygon boundary = new Polygon();
@@ -147,12 +115,37 @@ class GridContainer {
 //        boundary.addPoint(-21,21);
 //        boundary.addPoint(-10,21);
 
-        maze = new DepthFirstMaze(boundary, start);
+        maze = new DepthFirstMaze(boundary, entrance);
         pathFinder = new PathFinder(maze);
     }
 
     public void generate() {
         maze.generate();
+        generateEntranceAndExit();
+    }
+
+    public void generateEntranceAndExit() {
+
+        Stack<Tile> longestPath = new Stack<Tile>();
+        for (Map.Entry entry : maze.map.entrySet()) {
+            Tile t = (Tile)entry.getValue();
+
+            if (t.getPathDirections().size() == 1 && maze.isBoundaryEdge(t)) {
+                Stack<Tile> path = pathFinder.get(entrance, t.getLocation());
+                if (path.size() > longestPath.size()) {
+                    longestPath = path;
+                }
+            }
+        }
+
+        lolmakehighway(longestPath.peek());
+
+        Tile lastTile = new Tile(new Location(-1, -1));
+        while (!longestPath.empty()) {
+            lastTile = longestPath.pop();
+        }
+        exit = lastTile.getLocation();
+        lolmakehighway(lastTile);
     }
 
     public void draw() {
@@ -160,33 +153,14 @@ class GridContainer {
         strokeCap(ROUND);
         strokeWeight(lineWidth);
 
-
-//        Stack<Tile> longestPath = new Stack<Tile>();
-//        for (Map.Entry entry : maze.map.entrySet()) {
-//            Tile t = (Tile)entry.getValue();
-//            if (t.getPathDirections().size() == 1 && maze.isBoundaryEdge(t)) {
-//                Stack<Tile> path = this.pathFinder.get(start, t.getLocation());
-//                if (path.size() > longestPath.size()) {
-//                    longestPath = path;
-//                }
-//                break;
-//            }
-//        }
-//
-//        lolmakehighway(longestPath.peek());
-//        Tile lastTile = new Tile(new Location(-1, -1, -1));
-//        while (!longestPath.empty()) {
-//            lastTile = longestPath.pop();
-////            markTile(lastTile);
-//        }
-//        lolmakehighway(lastTile);
-
-//        markTile(maze.getFromHashMap(start));
-        //Iterate through the hashmap and print all tiles
         for (Map.Entry entry : maze.map.entrySet()) {
             Tile t = (Tile)entry.getValue();
             printTile(t);
         }
+
+        markTile(maze.getTile(entrance));
+        markTile(maze.getTile(exit));
+
     }
 
     private void lolmakehighway(Tile t)
@@ -196,7 +170,7 @@ class GridContainer {
 
         Location attemptedHighway = t.getNeighbourLocation(direction);
 
-        if (maze.getFromHashMap(attemptedHighway) != null) {
+        if (maze.getTile(attemptedHighway) != null) {
 
             //If the ideal straight line exit is blocked, brutely try and find the free path
             ArrayList<Integer> potentialDirections = new ArrayList<Integer>();
@@ -208,7 +182,7 @@ class GridContainer {
             for (Integer dir : potentialDirections) {
                 if (dir != direction) {
                     attemptedHighway = t.getNeighbourLocation(dir);
-                    if (maze.getFromHashMap(attemptedHighway) == null) {
+                    if (maze.getTile(attemptedHighway) == null) {
                         direction = dir;
                         break;
                     }
@@ -218,7 +192,7 @@ class GridContainer {
 
         Tile vestibule = t.connect(direction);
         vestibule.setDirection(direction, Tile.PATH_FLAT);
-        maze.addToHashMap(vestibule);
+        maze.addTile(vestibule);
     }
 
     public void printTile(Tile tile)
@@ -227,7 +201,7 @@ class GridContainer {
         int row = tLoc.getRow();
         int col = tLoc.getCol();
 
-        //Adjust the row and column indexes so that we have a margin around the screen, as well as multiplying for
+        //Adjust the row and column indexes so that we have getId margin around the screen, as well as multiplying for
         //pixel box width
         int adjustedRow = (row * (boxWidth)) + margin;
         int adjustedCol = (col * boxWidth) + margin;
@@ -258,7 +232,7 @@ class GridContainer {
         bottomRightX -= pipeOffset;
         bottomRightY -= pipeOffset;
 
-        switch (tile.getNorth()) {
+        switch (tile.getUp()) {
             case Tile.PATH_NONE:
                 line(topLeftX, topLeftY, topRightX, topRightY);
                 break;
@@ -268,7 +242,7 @@ class GridContainer {
                 break;
         }
 
-        switch (tile.getEast()) {
+        switch (tile.getRight()) {
             case Tile.PATH_NONE:
                 line(topRightX, topRightY, bottomRightX, bottomRightY);
                 break;
@@ -278,7 +252,7 @@ class GridContainer {
                 break;
         }
 
-        switch (tile.getWest()) {
+        switch (tile.getLeft()) {
             case Tile.PATH_NONE:
                 line(topLeftX, topLeftY, bottomLeftX, bottomLeftY);
                 break;
@@ -288,7 +262,7 @@ class GridContainer {
                 break;
         }
 
-        switch (tile.getSouth()) {
+        switch (tile.getDown()) {
             case Tile.PATH_NONE:
                 line(bottomRightX, bottomRightY, bottomLeftX, bottomLeftY);
                 break;

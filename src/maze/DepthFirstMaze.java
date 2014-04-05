@@ -18,12 +18,12 @@ public class DepthFirstMaze
         randomGenerator.setSeed(19091990);
     }
 
-    public void addToHashMap(Tile tile)
+    public void addTile(Tile tile)
     {
-        map.put(tile.getKey(), tile);
+        map.put(tile.getId(), tile);
     }
 
-    public Tile getFromHashMap(Location l)
+    public Tile getTile(Location l)
     {
         return map.get(l.getHashMapKey());
     }
@@ -32,14 +32,13 @@ public class DepthFirstMaze
     {
         Stack<Tile> stack = new Stack<Tile>();
         map.clear();
-        stack.clear();
 
         Tile beginning = new Tile(startLoc);
-        addToHashMap(beginning);
+        addTile(beginning);
         stack.push(beginning);
 
         while (!stack.empty()) {
-            Tile working = (Tile)stack.peek();
+            Tile working = stack.peek();
 
             ArrayList<Integer> directions = getPotentialNeighbours(working);
             if (directions.isEmpty()) {
@@ -47,7 +46,7 @@ public class DepthFirstMaze
             } else {
                 Integer chosenDirection = directions.get(randomGenerator.nextInt(directions.size()));
                 Tile newTile = working.connect(chosenDirection);
-                addToHashMap(newTile);
+                addTile(newTile);
                 stack.push(newTile);
             }
         }
@@ -103,7 +102,7 @@ public class DepthFirstMaze
         Location loc = t.getNeighbourLocation(direction);
         int row = loc.getRow();
         int col = loc.getCol();
-        if (boundary.contains(row, col) && getFromHashMap(loc) == null) {
+        if (boundary.contains(row, col) && getTile(loc) == null) {
             available_directions.add(direction);
         }
     }
@@ -112,111 +111,24 @@ public class DepthFirstMaze
     {
         ArrayList<Tile> neighbours = new ArrayList<Tile>();
 
-        Tile north = getFromHashMap(t.getNeighbourLocation(Direction.UP));
+        Tile north = getTile(t.getNeighbourLocation(Direction.UP));
         if (north != null) {
             neighbours.add(north);
         }
-        Tile south = getFromHashMap(t.getNeighbourLocation(Direction.DOWN));
+        Tile south = getTile(t.getNeighbourLocation(Direction.DOWN));
         if (south != null) {
             neighbours.add(south);
         }
-        Tile east = getFromHashMap(t.getNeighbourLocation(Direction.RIGHT));
+        Tile east = getTile(t.getNeighbourLocation(Direction.RIGHT));
         if (east != null) {
             neighbours.add(east);
         }
-        Tile west = getFromHashMap(t.getNeighbourLocation(Direction.LEFT));
+        Tile west = getTile(t.getNeighbourLocation(Direction.LEFT));
         if (west != null) {
             neighbours.add(west);
         }
 
         return neighbours;
     }
-
-//    public ArrayList<Integer> getUnvisitedNeighboursB(Location tile)
-//    {
-//        ArrayList<Integer> available_directions = new ArrayList<Integer>();
-//
-//        int rowLocation = tile.getRow();
-//        int colLocation = tile.getCol();
-//
-//        if (rowLocation != 0 && this.getTileAt(this.getNeighbourTileLocation(tile, Direction.UP)) == null) {
-//            available_directions.add(Direction.UP);
-//        }
-//
-//        if(rowLocation < rows - 1 && this.getTileAt(this.getNeighbourTileLocation(tile, Direction.DOWN)) == null){
-//            available_directions.add(Direction.DOWN);
-//        }
-//
-//        if(colLocation != 0 && this.getTileAt(this.getNeighbourTileLocation(tile, Direction.LEFT)) == null){
-//            available_directions.add(Direction.LEFT);
-//        }
-//
-//        if(colLocation < columns - 1 && this.getTileAt(this.getNeighbourTileLocation(tile, Direction.RIGHT)) == null){
-//            available_directions.add(Direction.RIGHT);
-//        }
-//
-//        ArrayList<Map<String, Tile>> eastArrayAttempt = new ArrayList<Map<String, Tile>>();
-//
-//        Map<String, Tile> tempEastMap = new HashMap<String, Tile>();
-//
-//        if (colLocation < columns -1) {
-//            Location tempEast = new Location(tile.row, tile.col, tile.depth);
-//
-//            while(tempEast.col < columns -1 ) {
-//                tempEast.col++;
-//                Tile newTile = new Tile();
-//                newTile.setDirection(Direction.LEFT, Tile.PATH_DOWN);
-//
-//                if (this.getTileAt(tempEast) == null){
-//                    tempEastMap.put(tempEast.getHashMapKey(), newTile);
-//                    eastArrayAttempt.add(tempEastMap);
-//                    break;
-//                } else {
-//                    Location underEast = new Location(tempEast.row, tempEast.col, -1);
-//                    newTile.setDirection(Direction.RIGHT, Tile.PATH_DOWN);
-//                    tempEastMap.put(underEast.getHashMapKey(), newTile);
-//                }
-//            }
-//        }
-//
-//        System.out.println(eastArrayAttempt.size());
-//
-//        return available_directions;
-//    }
-//
-//    public ArrayList<Map<String, Tile>> getUnvisitedNeighboursA(Location tile)
-//    {
-//        int rowLocation = tile.getRow();
-//        int colLocation = tile.getCol();
-//
-//        ArrayList<Map<String, Tile>> available_directions = new ArrayList<Map<String, Tile>>();
-//
-//        int DIRECTION = Direction.RIGHT;
-//
-//        if (colLocation < columns -1) {
-//            Map<String, Tile> tempMap = new HashMap<String, Tile>();
-//            Location tempLoc = new Location(tile.row, tile.col, tile.depth);
-//
-//            while(tempLoc.col < columns -1 ) {
-//                tempLoc.col++;
-//
-//                Tile newTile = new Tile();
-//                newTile.setDirection(Tile.getOppositeDirection(DIRECTION), Tile.PATH_DOWN);
-//
-//                if (this.getTileAt(tempLoc) == null){
-//                    tempMap.put(tempLoc.getHashMapKey(), newTile);
-//                    available_directions.add(tempMap);
-//                    break;
-//                } else {
-//                    newTile.setDirection(DIRECTION, Tile.PATH_DOWN);
-//                    tempMap.put(new Location(tempLoc.row, tempLoc.col, -1).getHashMapKey(), newTile);
-//                }
-//            }
-//
-//        }
-//
-//        return available_directions;
-//    }
-
 
 }
